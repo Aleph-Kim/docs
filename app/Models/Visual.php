@@ -2,17 +2,32 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 
+#[Fillable([
+    'title',
+    'slug',
+    'category_id',
+    'description',
+])]
 class Visual extends Model
 {
-    protected $fillable = ['title', 'slug', 'category_id', 'description', 'html'];
 
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    /**
+     * 저장된 HTML 문서 파일. 업로드 시 생성되고 웹서버가 정적으로 서빙한다.
+     */
+    public function file(): MorphOne
+    {
+        return $this->morphOne(File::class, 'fileable');
     }
 
     /**
@@ -21,13 +36,13 @@ class Visual extends Model
      */
     public function scopeSearch(Builder $query, ?string $term): Builder
     {
-        $term = trim((string) $term);
+        $term = trim((string)$term);
 
         if ($term === '') {
             return $query;
         }
 
-        $escaped = '%'.addcslashes($term, '%_\\').'%';
+        $escaped = '%' . addcslashes($term, '%_\\') . '%';
 
         // ESCAPE 절을 명시해야 SQLite·MariaDB 모두에서 백슬래시가 이스케이프 문자로 동작한다
         return $query->where(function (Builder $q) use ($escaped) {

@@ -7,20 +7,6 @@ use Illuminate\Validation\Rule;
 
 class UpdateVisualRequest extends FormRequest
 {
-    public function authorize(): bool
-    {
-        return $this->session()->get('is_admin') === true;
-    }
-
-    protected function prepareForValidation(): void
-    {
-        if ($this->hasFile('html_file') && $this->file('html_file')->isValid()) {
-            $this->merge([
-                'html' => file_get_contents($this->file('html_file')->getRealPath()),
-            ]);
-        }
-    }
-
     public function rules(): array
     {
         return [
@@ -28,8 +14,8 @@ class UpdateVisualRequest extends FormRequest
             'slug' => ['nullable', 'string', 'alpha_dash', 'max:255', Rule::unique('visuals', 'slug')->ignore($this->route('visual'))],
             'category_id' => ['required', 'integer', 'exists:categories,id'],
             'description' => ['nullable', 'string', 'max:255'],
+            // 생략 시 기존 파일 유지
             'html_file' => ['nullable', 'file', 'mimetypes:text/html,text/plain', 'max:5120'],
-            'html' => ['required', 'string'],
         ];
     }
 }

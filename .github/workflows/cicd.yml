@@ -105,8 +105,12 @@ jobs:
             --restart unless-stopped \
             -v ${{ secrets.ENV_PATH }}:/var/www/html/.env \
             -v ${{ secrets.LOG_DIR_PATH }}:/var/www/html/storage/logs \
+            -v ${{ secrets.UPLOADS_DIR_PATH }}:/var/www/html/storage/app/public \
             --network ${{ secrets.NETWORK_NAME }} \
             ${{ secrets.DOCKER_USERNAME }}/${{ secrets.PROJECT_NAME }}:latest
+
+          # public 디스크 심볼릭 링크 생성 (컨테이너 재생성 시마다 다시 필요)
+          docker exec ${{ secrets.PROJECT_NAME }} php artisan storage:link
 
           # DB 마이그레이션 실행
           docker exec ${{ secrets.PROJECT_NAME }} php artisan migrate --force

@@ -43,23 +43,23 @@
     </div>
 
     <div class="field">
-        <label for="html_file">.html 파일 업로드</label>
+        <label for="html_file">.html 파일 업로드 @unless ($editing) *@endunless</label>
         <input type="file" name="html_file" id="html_file" accept=".html,text/html">
-        <div class="hint">파일을 올리면 아래 textarea 내용 대신 파일 내용이 저장됩니다. (파일 자체는 저장하지 않음)</div>
+        <div class="hint">
+            @if ($editing)
+                새 파일을 올리면 교체됩니다. 비워두면 기존 파일이 유지됩니다.
+            @else
+                업로드한 파일이 저장되고 상세 페이지에 표시됩니다.
+            @endif
+        </div>
         @error('html_file') <div class="err">{{ $message }}</div> @enderror
     </div>
 
-    <div class="field">
-        <label for="html">HTML 원문</label>
-        <textarea name="html" id="html" class="code">{{ old('html', $visual->html ?? '') }}</textarea>
-        @error('html') <div class="err">{{ $message }}</div> @enderror
-    </div>
-
-    @if ($editing)
+    @if ($editing && $visual->file)
         <div class="field">
             <label>현재 저장된 HTML 미리보기</label>
             <div class="frame-wrap">
-                <iframe src="{{ route('visuals.raw', $visual->slug) }}"
+                <iframe src="{{ $visual->file->url }}"
                         sandbox="allow-scripts allow-popups"
                         title="미리보기"></iframe>
             </div>

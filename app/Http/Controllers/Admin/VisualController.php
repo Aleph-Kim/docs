@@ -7,7 +7,9 @@ use App\Http\Requests\Admin\StoreVisualRequest;
 use App\Http\Requests\Admin\UpdateVisualRequest;
 use App\Models\Category;
 use App\Models\Visual;
+use App\Services\FileService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -32,7 +34,10 @@ class VisualController extends Controller
         $data = $request->safe()->except('html_file');
         $data['slug'] = $this->uniqueSlug($data['slug'] ?? null, $data['title']);
 
-        Visual::create($data);
+        DB::transaction(function () use ($request, $data) {
+            $visual = Visual::create($data);
+            FileService::saveOrUpdate($visual, $request, 'html_file');
+        });
 
         return redirect()->route('admin.visuals.index')->with('status', '시각화를 등록했습니다.');
     }
@@ -40,7 +45,7 @@ class VisualController extends Controller
     public function edit(Visual $visual): View
     {
         return view('admin.visuals.edit', [
-            'visual' => $visual,
+            'visual' => $visual->load('file'),
             'categories' => Category::orderBy('name')->get(),
         ]);
     }
@@ -50,14 +55,20 @@ class VisualController extends Controller
         $data = $request->safe()->except('html_file');
         $data['slug'] = $this->uniqueSlug($data['slug'] ?? null, $data['title'], $visual->id);
 
-        $visual->update($data);
+        DB::transaction(function () use ($request, $visual, $data) {
+            $visual->update($data);
+            FileService::saveOrUpdate($visual, $request, 'html_file');
+        });
 
         return redirect()->route('admin.visuals.index')->with('status', '시각화를 수정했습니다.');
     }
 
     public function destroy(Visual $visual): RedirectResponse
     {
-        $visual->delete();
+        DB::transaction(function () use ($visual) {
+            FileService::deleteByModel($visual);
+            $visual->delete();
+        });
 
         return redirect()->route('admin.visuals.index')->with('status', '시각화를 삭제했습니다.');
     }
@@ -72,9 +83,9 @@ class VisualController extends Controller
         $suffix = 2;
 
         while (Visual::where('slug', $candidate)
-            ->when($ignoreId, fn ($q) => $q->whereKeyNot($ignoreId))
+            ->when($ignoreId, fn($q) => $q->whereKeyNot($ignoreId))
             ->exists()) {
-            $candidate = $base.'-'.$suffix++;
+            $candidate = $base . '-' . $suffix++;
         }
 
         return $candidate;

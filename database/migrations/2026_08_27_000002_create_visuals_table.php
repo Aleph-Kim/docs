@@ -14,7 +14,6 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->foreignId('category_id')->constrained()->cascadeOnUpdate()->restrictOnDelete();
             $table->string('description')->nullable();
-            $table->longText('html');
             $table->timestamps();
         });
     }
