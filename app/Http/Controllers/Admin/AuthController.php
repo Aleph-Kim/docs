@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 
 class AuthController extends Controller
@@ -22,11 +21,11 @@ class AuthController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        $hash = (string) config('admin.password_hash');
+        $password = (string) config('admin.password');
 
         $valid = hash_equals((string) config('admin.id'), $credentials['id'])
-            && $hash !== ''
-            && Hash::check($credentials['password'], $hash);
+            && $password !== ''
+            && hash_equals($password, $credentials['password']);
 
         if (! $valid) {
             return back()

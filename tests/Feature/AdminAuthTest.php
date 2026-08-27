@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class AdminAuthTest extends TestCase
@@ -16,7 +15,7 @@ class AdminAuthTest extends TestCase
 
         config([
             'admin.id' => 'admin',
-            'admin.password_hash' => Hash::make('secret'),
+            'admin.password' => 'secret',
         ]);
     }
 

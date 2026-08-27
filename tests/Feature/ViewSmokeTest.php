@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\Models\Category;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class ViewSmokeTest extends TestCase
@@ -13,7 +12,7 @@ class ViewSmokeTest extends TestCase
 
     public function test_all_pages_render(): void
     {
-        config(['admin.id' => 'admin', 'admin.password_hash' => Hash::make('secret')]);
+        config(['admin.id' => 'admin', 'admin.password' => 'secret']);
         $cat = Category::create(['name' => 'Cat', 'slug' => 'cat']);
         $visual = $this->makeVisual([
             'title' => 'Doc', 'slug' => 'doc', 'category_id' => $cat->id, 'description' => 'desc',

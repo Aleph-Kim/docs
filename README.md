@@ -4,7 +4,7 @@ Claude로 생성한 완결형 단일 HTML 시각화 문서를 저장·분류·�
 
 - PHP 8.3 / Laravel 13 / MariaDB 11.8
 - 단순 MVC (Controller + Eloquent Model), 스타터 킷·`users` 테이블 없음
-- 관리자 로그인은 환경변수(`ADMIN_ID` / bcrypt 해시) + 세션 플래그 기반
+- 관리자 로그인은 환경변수(`ADMIN_ID` / `ADMIN_PASSWORD`) + 세션 플래그 기반
 
 ## 로컬 설치
 
@@ -17,25 +17,22 @@ npm install
 cp .env.example .env
 php artisan key:generate
 
-# 3. .env 에서 DB_* 와 ADMIN_ID 설정 (DB_HOST 는 도커 기준 host.docker.internal)
+# 3. .env 에서 DB_* 와 ADMIN_ID, ADMIN_PASSWORD 설정 (DB_HOST 는 도커 기준 host.docker.internal)
 
-# 4. 관리자 비밀번호 해시 생성 → .env 의 ADMIN_PASSWORD_HASH 에 따옴표 없이 붙여넣기
-php artisan tinker --execute="echo bcrypt('원하는비밀번호');"
-
-# 5. 호스트 MariaDB 에 DB 생성
+# 4. 호스트 MariaDB 에 DB 생성
 #    CREATE DATABASE docs CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-# 6. 마이그레이션 + 카테고리 시드
+# 5. 마이그레이션 + 카테고리 시드
 php artisan migrate --seed
 
-# 7. 프론트엔드 빌드
+# 6. 프론트엔드 빌드
 npm run build
 
-# 8-a. 도커로 실행 (참고 프로젝트와 동일한 구조)
+# 7-a. 도커로 실행 (참고 프로젝트와 동일한 구조)
 docker network create local_net   # 최초 1회
 docker compose up -d               # http://localhost
 
-# 8-b. 도커 없이 실행
+# 7-b. 도커 없이 실행
 php artisan serve
 ```
 
