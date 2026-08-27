@@ -41,5 +41,43 @@
 
         @yield('content')
     </main>
+
+    <div class="responsive-modal-backdrop" id="responsive-modal">
+        <div class="responsive-modal" role="dialog" aria-modal="true" aria-labelledby="responsive-modal-title">
+            <h2 id="responsive-modal-title">알림</h2>
+            <p>이 홈페이지는 모바일에 최적화 되어있지 않습니다.</p>
+            <p>PC에서의 접근을 권장드립니다.</p>
+            <button type="button" class="btn btn-accent" id="responsive-modal-ok">확인</button>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            var KEY = 'visuals-mobile-notice-seen';
+            var modal = document.getElementById('responsive-modal');
+            var okBtn = document.getElementById('responsive-modal-ok');
+
+            function isMobile() {
+                return window.matchMedia('(max-width: 768px)').matches;
+            }
+
+            function closeModal() {
+                modal.classList.remove('is-open');
+            }
+
+            if (isMobile() && !localStorage.getItem(KEY)) {
+                modal.classList.add('is-open');
+                localStorage.setItem(KEY, '1');
+            }
+
+            okBtn.addEventListener('click', closeModal);
+            modal.addEventListener('click', function (e) {
+                if (e.target === modal) closeModal();
+            });
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') closeModal();
+            });
+        })();
+    </script>
 </body>
 </html>
