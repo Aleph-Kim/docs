@@ -347,8 +347,6 @@ table.list th {
 }
 
 .frame-wrap {
-    border: 1px solid var(--line);
-    border-radius: 6px;
     overflow: hidden;
 }
 
