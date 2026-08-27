@@ -1,6 +1,6 @@
 # Docs
 
-Claude로 생성한 완결형 단일 HTML 시각화 문서를 저장·분류·열람하는 개인용 아카이브.
+Claude로 생성한 완결형 단일 HTML 문서 문서를 저장·분류·열람하는 개인용 아카이브.
 
 - PHP 8.3 / Laravel 13 / MariaDB 11.8
 - 단순 MVC (Controller + Eloquent Model), 스타터 킷·`users` 테이블 없음
@@ -57,7 +57,7 @@ composer test   # SQLite 인메모리 DB 사용
 | `SERVER_IP` / `SERVER_USER` / `SSH_PRIVATE_KEY` | 배포 서버 SSH 접속                                                               |
 | `ENV_PATH`                                      | 서버의 `.env` 절대경로 (컨테이너 `/var/www/html/.env` 로 마운트)                          |
 | `LOG_DIR_PATH`                                  | 서버의 로그 디렉터리 (컨테이너 `storage/logs` 로 마운트)                                    |
-| `UPLOADS_DIR_PATH`                              | 서버의 업로드 디렉터리 (컨테이너 `storage/app/public` 로 마운트, 시각화 HTML 보관, 컨테이너 재생성에도 유지) |
+| `UPLOADS_DIR_PATH`                              | 서버의 업로드 디렉터리 (컨테이너 `storage/app/public` 로 마운트, 문서 HTML 보관, 컨테이너 재생성에도 유지) |
 | `NETWORK_NAME`                                  | 리버스 프록시와 공유하는 도커 네트워크                                                      |
 
 첫 배포 전 `UPLOADS_DIR_PATH` 디렉터리를 만들고 컨테이너의 `www-data`(uid:gid `33:33`) 소유로 지정해야 한다.

@@ -43,7 +43,7 @@ class CategoryController extends Controller
     {
         if ($category->visuals()->exists()) {
             return redirect()->route('admin.categories.index')
-                ->withErrors(['category' => '이 카테고리에 연결된 시각화가 있어 삭제할 수 없습니다.']);
+                ->withErrors(['category' => '이 카테고리에 연결된 문서가 있어 삭제할 수 없습니다.']);
         }
 
         $category->delete();

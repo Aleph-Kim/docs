@@ -39,7 +39,7 @@ class VisualController extends Controller
             FileService::saveOrUpdate($visual, $request, 'html_file');
         });
 
-        return redirect()->route('admin.visuals.index')->with('status', '시각화를 등록했습니다.');
+        return redirect()->route('admin.visuals.index')->with('status', '문서를 등록했습니다.');
     }
 
     public function edit(Visual $visual): View
@@ -60,7 +60,7 @@ class VisualController extends Controller
             FileService::saveOrUpdate($visual, $request, 'html_file');
         });
 
-        return redirect()->route('admin.visuals.index')->with('status', '시각화를 수정했습니다.');
+        return redirect()->route('admin.visuals.index')->with('status', '문서를 수정했습니다.');
     }
 
     public function destroy(Visual $visual): RedirectResponse
@@ -70,7 +70,7 @@ class VisualController extends Controller
             $visual->delete();
         });
 
-        return redirect()->route('admin.visuals.index')->with('status', '시각화를 삭제했습니다.');
+        return redirect()->route('admin.visuals.index')->with('status', '문서를 삭제했습니다.');
     }
 
     /**

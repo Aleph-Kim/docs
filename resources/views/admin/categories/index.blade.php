@@ -22,7 +22,7 @@
                 <tr>
                     <th>이름</th>
                     <th>슬러그</th>
-                    <th>시각화</th>
+                    <th>문서</th>
                     <th></th>
                 </tr>
             </thead>

@@ -13,7 +13,7 @@
             <a href="{{ route('visuals.index') }}" class="site-name">Docs</a>
             <nav class="site-nav">
                 @if (session('is_admin'))
-                    <a href="{{ route('admin.visuals.index') }}">시각화 관리</a>
+                    <a href="{{ route('admin.visuals.index') }}">문서 관리</a>
                     <a href="{{ route('admin.categories.index') }}">카테고리</a>
                     <form method="POST" action="{{ route('admin.logout') }}">
                         @csrf

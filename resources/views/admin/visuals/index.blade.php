@@ -1,15 +1,15 @@
 @extends('layouts.app')
 
-@section('title', '시각화 관리')
+@section('title', '문서 관리')
 
 @section('content')
     <div class="page-head">
-        <h1>시각화 관리</h1>
-        <a href="{{ route('admin.visuals.create') }}" class="btn btn-accent">새 시각화</a>
+        <h1>문서 관리</h1>
+        <a href="{{ route('admin.visuals.create') }}" class="btn btn-accent">새 문서</a>
     </div>
 
     @if ($visuals->isEmpty())
-        <div class="empty">등록된 시각화가 없습니다.</div>
+        <div class="empty">등록된 문서가 없습니다.</div>
     @else
         <table class="list">
             <thead>

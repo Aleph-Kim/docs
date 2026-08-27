@@ -1,10 +1,10 @@
 @extends('layouts.app')
 
-@section('title', '시각화 목록')
+@section('title', '문서 목록')
 
 @section('content')
     <div class="page-head">
-        <h1>시각화 목록</h1>
+        <h1>문서 목록</h1>
         <span class="muted small">{{ $visuals->total() }}개</span>
     </div>
 
@@ -26,7 +26,7 @@
     </form>
 
     @if ($visuals->isEmpty())
-        <div class="empty">등록된 시각화가 없습니다.</div>
+        <div class="empty">등록된 문서가 없습니다.</div>
     @else
         <div class="grid">
             @foreach ($visuals as $visual)
