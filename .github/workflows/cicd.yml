@@ -109,11 +109,11 @@ jobs:
             --network ${{ secrets.NETWORK_NAME }} \
             ${{ secrets.DOCKER_USERNAME }}/${{ secrets.PROJECT_NAME }}:latest
 
-          # public 디스크 심볼릭 링크 생성 (컨테이너 재생성 시마다 다시 필요)
-          docker exec ${{ secrets.PROJECT_NAME }} php artisan storage:link
-
           # DB 마이그레이션 실행
           docker exec ${{ secrets.PROJECT_NAME }} php artisan migrate --force
 
+          # public 디스크 심볼릭 링크 생성 (컨테이너 재생성 시마다 다시 필요)
+          docker exec -u www-data ${{ secrets.PROJECT_NAME }} php artisan storage:link
+
           # 캐시 갱신
-          docker exec ${{ secrets.PROJECT_NAME }} php artisan optimize
+          docker exec -u www-data ${{ secrets.PROJECT_NAME }} php artisan optimize
