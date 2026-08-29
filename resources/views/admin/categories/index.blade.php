@@ -21,42 +21,44 @@
         @if ($categories->isEmpty())
             <div class="empty" id="empty-state">카테고리가 없습니다.</div>
         @else
-            <table class="list" id="category-table">
-                <thead>
-                    <tr>
-                        <th>이름</th>
-                        <th>슬러그</th>
-                        <th>문서</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody id="category-tbody">
-                    @foreach ($categories as $category)
-                        <tr id="cat-row-{{ $category->id }}">
-                            <td colspan="2">
-                                <form method="POST" action="{{ route('admin.categories.update', $category) }}"
-                                      class="row-actions category-update-form" style="align-items:center">
-                                    @csrf
-                                    @method('PUT')
-                                    <input type="text" name="name" value="{{ $category->name }}" style="width:180px" required>
-                                    <input type="text" name="slug" value="{{ $category->slug }}" style="width:160px">
-                                    <button type="submit" class="btn">저장</button>
-                                </form>
-                            </td>
-                            <td>{{ $category->visuals_count }}</td>
-                            <td>
-                                <form method="POST" action="{{ route('admin.categories.destroy', $category) }}"
-                                      class="category-delete-form">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger"
-                                            @disabled($category->visuals_count > 0)>삭제</button>
-                                </form>
-                            </td>
+            <div class="table-wrap">
+                <table class="list" id="category-table">
+                    <thead>
+                        <tr>
+                            <th>이름</th>
+                            <th>슬러그</th>
+                            <th class="nowrap">문서</th>
+                            <th class="actions"></th>
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody id="category-tbody">
+                        @foreach ($categories as $category)
+                            <tr id="cat-row-{{ $category->id }}">
+                                <td colspan="2">
+                                    <form method="POST" action="{{ route('admin.categories.update', $category) }}"
+                                          class="row-actions category-update-form" style="align-items:center; justify-content: flex-start;">
+                                        @csrf
+                                        @method('PUT')
+                                        <input type="text" name="name" value="{{ $category->name }}" style="width:180px" required>
+                                        <input type="text" name="slug" value="{{ $category->slug }}" style="width:160px">
+                                        <button type="submit" class="btn">저장</button>
+                                    </form>
+                                </td>
+                                <td class="nowrap">{{ $category->visuals_count }}</td>
+                                <td class="actions">
+                                    <form method="POST" action="{{ route('admin.categories.destroy', $category) }}"
+                                          class="category-delete-form">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger"
+                                                @disabled($category->visuals_count > 0)>삭제</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         @endif
     </div>
 

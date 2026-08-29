@@ -230,6 +230,7 @@ main.wrap {
     font-size: 16px;
     line-height: 1.5;
     cursor: pointer;
+    white-space: nowrap;
 }
 
 .btn:hover {
@@ -307,6 +308,13 @@ textarea.code {
 }
 
 /* 테이블 */
+.table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 20px;
+}
+
 table.list {
     width: 100%;
     border-collapse: collapse;
@@ -316,18 +324,46 @@ table.list {
 table.list th,
 table.list td {
     text-align: left;
-    padding: 8px 10px;
+    padding: 10px 12px;
     border-bottom: 1px solid var(--line);
+    vertical-align: middle;
 }
 
 table.list th {
     color: var(--ink-3);
     font-weight: normal;
+    white-space: nowrap;
+}
+
+table.list td.nowrap,
+table.list th.nowrap {
+    white-space: nowrap;
+}
+
+table.list td.actions,
+table.list th.actions {
+    width: 1%;
+    white-space: nowrap;
+    text-align: right;
+}
+
+table.list td.title {
+    word-break: break-word;
+    overflow-wrap: anywhere;
+}
+
+table.list td.slug {
+    word-break: break-all;
+    font-size: 15px;
+    color: var(--ink-3);
 }
 
 .row-actions {
     display: flex;
     gap: 6px;
+    align-items: center;
+    justify-content: flex-end;
+    white-space: nowrap;
 }
 
 /* 상세 페이지 */

@@ -14,39 +14,41 @@
     @if ($visuals->isEmpty())
         <div class="empty">등록된 문서가 없습니다.</div>
     @else
-        <table class="list">
-            <thead>
-                <tr>
-                    <th>제목</th>
-                    <th>카테고리</th>
-                    <th>슬러그</th>
-                    <th>등록일</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($visuals as $visual)
-                    <tr id="visual-row-{{ $visual->id }}">
-                        <td>{{ $visual->title }}</td>
-                        <td>{{ $visual->category->name }}</td>
-                        <td>{{ $visual->slug }}</td>
-                        <td>{{ $visual->created_at->format('Y-m-d') }}</td>
-                        <td>
-                            <div class="row-actions">
-                                <a href="{{ route('visuals.show', $visual->slug) }}" target="_blank" rel="noopener" class="btn">보기</a>
-                                <a href="{{ route('admin.visuals.edit', $visual) }}" class="btn">수정</a>
-                                <form method="POST" action="{{ route('admin.visuals.destroy', $visual) }}"
-                                      class="visual-delete-form">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger">삭제</button>
-                                </form>
-                            </div>
-                        </td>
+        <div class="table-wrap">
+            <table class="list">
+                <thead>
+                    <tr>
+                        <th>제목</th>
+                        <th class="nowrap">카테고리</th>
+                        <th>슬러그</th>
+                        <th class="nowrap">등록일</th>
+                        <th class="actions"></th>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach ($visuals as $visual)
+                        <tr id="visual-row-{{ $visual->id }}">
+                            <td class="title">{{ $visual->title }}</td>
+                            <td class="nowrap">{{ $visual->category->name }}</td>
+                            <td class="slug">{{ $visual->slug }}</td>
+                            <td class="nowrap">{{ $visual->created_at->format('Y-m-d') }}</td>
+                            <td class="actions">
+                                <div class="row-actions">
+                                    <a href="{{ route('visuals.show', $visual->slug) }}" target="_blank" rel="noopener" class="btn">보기</a>
+                                    <a href="{{ route('admin.visuals.edit', $visual) }}" class="btn">수정</a>
+                                    <form method="POST" action="{{ route('admin.visuals.destroy', $visual) }}"
+                                          class="visual-delete-form">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger">삭제</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
 
         <div class="pagination-wrap">
             {{ $visuals->links() }}
