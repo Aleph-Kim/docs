@@ -74,11 +74,16 @@ class SeoGeoAeoTest extends TestCase
         $response->assertSee('<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">', false);
         // Canonical tag
         $response->assertSee('<link rel="canonical" href="' . route('visuals.index') . '">', false);
-        // Open Graph
+        // Open Graph & Image
         $response->assertSee('<meta property="og:site_name" content="Docs">', false);
         $response->assertSee('<meta property="og:type" content="website">', false);
+        $response->assertSee('<meta property="og:image" content="http://localhost/og-image.png">', false);
         // Twitter
-        $response->assertSee('<meta name="twitter:card" content="summary">', false);
+        $response->assertSee('<meta name="twitter:card" content="summary_large_image">', false);
+        $response->assertSee('<meta name="twitter:image" content="http://localhost/og-image.png">', false);
+        // Favicons & Manifest
+        $response->assertSee('<link rel="icon" href="/favicon.svg" type="image/svg+xml">', false);
+        $response->assertSee('<link rel="manifest" href="/site.webmanifest">', false);
         // JSON-LD Structured Data
         $response->assertSee('"@type": "WebSite"', false);
         $response->assertSee('"@type": "SearchAction"', false);

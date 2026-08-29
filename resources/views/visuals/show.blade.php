@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @php
-    $description = $visual->description ?: "{$visual->category->name} 카테고리의 완결형 HTML 시각화 문서: {$visual->title}";
+    $description = $visual->description ?: "{$visual->category->name} 카테고리의 기술 문서: {$visual->title}";
 
     $schemaGraph = [
         '@context' => 'https://schema.org',

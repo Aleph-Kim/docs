@@ -4,8 +4,8 @@
     $currentCategory = $categories->firstWhere('id', (int) $activeCategory);
     $pageTitle = $currentCategory ? "{$currentCategory->name} 문서 목록" : '문서 목록';
     $pageDesc = $currentCategory
-        ? "{$currentCategory->name} 카테고리의 완결형 HTML 시각화 문서 아카이브입니다."
-        : '기술 개념 설명(eli5), 인터랙티브 다이어그램, 아키텍처 가이드 등의 완결형 HTML 시각화 문서 아카이브입니다.';
+        ? "{$currentCategory->name} 카테고리의 인터랙티브 시각화 및 기술 문서 목록입니다."
+        : '기술 개념 설명(eli5), 인터랙티브 다이어그램, 아키텍처 가이드 등의 기술 문서 아카이브입니다.';
     $metaRobots = $keyword ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
 
     $schemaItemList = $visuals->map(function ($visual, $index) {
@@ -25,7 +25,7 @@
                 '@id' => route('visuals.index') . '#website',
                 'url' => route('visuals.index'),
                 'name' => 'Docs',
-                'description' => 'Claude로 생성한 완결형 단일 HTML 문서 아카이브',
+                'description' => '인터랙티브 시각화 및 기술 문서 아카이브 Docs',
                 'inLanguage' => 'ko-KR',
                 'potentialAction' => [
                     '@type' => 'SearchAction',

@@ -36,11 +36,10 @@ class SeoController extends Controller
 
         $lines = [];
         $lines[] = '# Docs';
-        $lines[] = '';
-        $lines[] = '> Claude로 생성한 완결형 단일 HTML 문서를 저장·분류·열람하는 인터랙티브 시각화 아카이브';
+        $lines[] = '> 기술 개념 설명, 인터랙티브 다이어그램, 아키텍처 가이드 등의 문서를 저장하고 열람하는 아카이브';
         $lines[] = '';
         $lines[] = '## About';
-        $lines[] = 'Docs는 기술 개념 설명(eli5), 인터랙티브 다이어그램, 아키텍처 가이드 등의 단일 HTML 문서를 제공합니다.';
+        $lines[] = 'Docs는 기술 개념 설명(eli5), 인터랙티브 다이어그램, 아키텍처 가이드 등의 시각화 문서를 제공합니다.';
         $lines[] = '모든 문서는 웹 인터페이스에서 즉시 열람하거나 새 탭에서 전체 화면으로 실행할 수 있습니다.';
         $lines[] = '';
         $lines[] = '## Categories';

@@ -1,0 +1,26 @@
+{
+  "name": "Docs - 인터랙티브 시각화 & 기술 문서 아카이브",
+  "short_name": "Docs",
+  "description": "인터랙티브 시각화 및 기술 문서를 저장하고 열람하는 아카이브 Docs",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0f766e",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

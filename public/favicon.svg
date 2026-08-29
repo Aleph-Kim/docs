@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f766e"/>
+      <stop offset="100%" stop-color="#14b8a6"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <!-- Background rounded box -->
+  <rect width="64" height="64" rx="14" fill="#18181b"/>
+  
+  <!-- Outer subtle border -->
+  <rect x="1" y="1" width="62" height="62" rx="13" fill="none" stroke="#27272a" stroke-width="1.5"/>
+
+  <!-- Document Sheet -->
+  <path d="M16 12 H40 L50 22 V50 C50 52.2 48.2 54 46 54 H16 C13.8 54 12 52.2 12 50 V16 C12 13.8 13.8 12 16 12 Z" 
+        fill="#27272a" stroke="#3f3f46" stroke-width="1.5" filter="url(#shadow)"/>
+  
+  <!-- Document Fold Corner -->
+  <path d="M40 12 V20 C40 21.1 40.9 22 42 22 H50 Z" fill="#3f3f46"/>
+
+  <!-- Retro Prompt & Code Lines -->
+  <!-- ">" symbol in Teal Accent -->
+  <path d="M20 25 L26 29 L20 33" fill="none" stroke="url(#brandGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Cursor bar -->
+  <rect x="29" y="31" width="7" height="2.5" rx="1" fill="#14b8a6"/>
+
+  <!-- Document content lines -->
+  <rect x="20" y="39" width="24" height="2" rx="1" fill="#71717a"/>
+  <rect x="20" y="45" width="16" height="2" rx="1" fill="#52525b"/>
+</svg>
+
