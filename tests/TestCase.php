@@ -15,17 +15,15 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
 
-        // 실제 storage/app/public 오염 방지 (전 테스트 공통)
-        Storage::fake('public');
+        // 실제 스토리지 오염 방지 (기본 디스크 fake)
+        Storage::fake();
     }
 
-    /**
-     * HTML 파일이 붙은 Visual 을 만든다. 이 프로젝트엔 팩토리가 없어 헬퍼로 둔다.
-     */
+    // 테스트용 HTML 첨부 Visual 생성
     protected function makeVisual(array $attributes = []): Visual
     {
         $category = Category::firstOrCreate(['slug' => 'general'], ['name' => 'General']);
-        $title = $attributes['title'] ?? 'Visual ' . Str::random(5);
+        $title = $attributes['title'] ?? 'Visual '.Str::random(5);
 
         $visual = Visual::create([
             'title' => $title,
@@ -34,9 +32,14 @@ abstract class TestCase extends BaseTestCase
             'description' => $attributes['description'] ?? null,
         ]);
 
-        $html = $attributes['html'] ?? '<!DOCTYPE html><html><body>' . $title . '</body></html>';
-        $path = 'visuals/' . date('Y/m/d') . '/' . Str::random(40) . '.html';
-        Storage::disk('public')->put($path, $html);
+        $html = $attributes['html'] ?? '<!DOCTYPE html><html><body>'.$title.'</body></html>';
+        $env = config('app.env') === 'production' ? 'production' : 'local';
+        $path = $env.'/visuals/'.date('Y/m/d').'/'.Str::random(40).'.html';
+        Storage::put($path, $html, [
+            'visibility' => 'public',
+            'ContentType' => 'text/html',
+            'mimetype' => 'text/html',
+        ]);
 
         $visual->file()->save(new File([
             'url' => $path,

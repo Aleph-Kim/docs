@@ -36,7 +36,7 @@ class PublicVisualTest extends TestCase
         $this->makeVisual(['title' => '100% Coverage']);
         $this->makeVisual(['title' => 'Plain Title']);
 
-        // '%' 가 LIKE 와일드카드로 새지 않고 리터럴로 매칭되어야 한다
+        // '%' 등 LIKE 와일드카드의 리터럴 검색 매칭
         $this->get(route('visuals.index', ['q' => '100%']))
             ->assertOk()
             ->assertSee('100% Coverage')
@@ -64,10 +64,35 @@ class PublicVisualTest extends TestCase
         $response = $this->get(route('visuals.show', $visual->slug));
 
         $response->assertOk();
-        $response->assertSee($visual->file->url, false);
+        $response->assertSee(route('visuals.render', $visual), false);
         $response->assertSee('sandbox="allow-scripts allow-popups"', false);
 
-        Storage::disk('public')->assertExists($path);
-        $this->assertStringContainsString('Raw Doc', Storage::disk('public')->get($path));
+        Storage::assertExists($path);
+        $this->assertStringContainsString('Raw Doc', Storage::get($path));
+    }
+
+    public function test_render_serves_html_file_with_html_content_type(): void
+    {
+        $visual = $this->makeVisual(['title' => 'Render Doc']);
+
+        $response = $this->get(route('visuals.render', $visual->slug));
+
+        $response->assertOk();
+        $response->assertHeader('Content-Type', 'text/html; charset=UTF-8');
+        $response->assertHeader('Content-Security-Policy', 'sandbox allow-scripts allow-popups');
+        $response->assertHeader('Cache-Control', 'max-age=3600, public, stale-while-revalidate=86400');
+        $response->assertHeader('ETag');
+        $response->assertSee('Render Doc', false);
+    }
+
+    public function test_render_caches_file_content(): void
+    {
+        $visual = $this->makeVisual(['title' => 'Cached Doc']);
+        $cacheKey = "visual:content:{$visual->id}";
+
+        $this->get(route('visuals.render', $visual->slug))->assertOk();
+
+        $this->assertTrue(\Illuminate\Support\Facades\Cache::has($cacheKey));
+        $this->assertStringContainsString('Cached Doc', \Illuminate\Support\Facades\Cache::get($cacheKey));
     }
 }

@@ -10,8 +10,6 @@ use Illuminate\Support\Str;
 
 /**
  * @extends Factory<File>
- *
- * Storage::fake('public') 가 활성화된 테스트에서만 사용한다.
  */
 class FileFactory extends Factory
 {
@@ -21,14 +19,20 @@ class FileFactory extends Factory
     {
         $content = '<!DOCTYPE html><html><body>'.fake()->sentence().'</body></html>';
         $upload = UploadedFile::fake()->createWithContent('viz.html', $content);
-        $stored = Storage::disk('public')->putFileAs('visuals/'.date('Y/m/d'), $upload, Str::random(40).'.html');
+        $env = config('app.env') === 'production' ? 'production' : 'local';
+        $targetDirectory = $env.'/visuals/'.date('Y/m/d');
+        $stored = Storage::putFileAs($targetDirectory, $upload, Str::random(40).'.html', [
+            'visibility' => 'public',
+            'ContentType' => 'text/html',
+            'mimetype' => 'text/html',
+        ]);
 
         return [
             'url' => $stored,
             'name' => basename($stored),
             'origin_name' => 'viz.html',
             'mime_type' => 'text/html',
-            'file_size' => Storage::disk('public')->size($stored),
+            'file_size' => Storage::size($stored),
             'field_name' => 'html_file',
         ];
     }

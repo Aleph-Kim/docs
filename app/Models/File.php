@@ -23,14 +23,14 @@ class File extends Model
         // 파일 교체 시 예전 실물 삭제. url 접근자는 전체 URL 을 반환하므로 raw 값을 쓴다
         static::updating(function (File $file): void {
             if ($file->isDirty('url') && ($old = $file->getRawOriginal('url'))) {
-                Storage::disk('public')->delete($old);
+                Storage::delete($old);
             }
         });
 
         // hard delete 시에만 실물 삭제(soft delete 는 파일을 남긴다)
         static::deleting(function (File $file): void {
             if ($file->isForceDeleting() && ($path = $file->getRawOriginal('url'))) {
-                Storage::disk('public')->delete($path);
+                Storage::delete($path);
             }
         });
     }
@@ -42,6 +42,6 @@ class File extends Model
 
     protected function url(): Attribute
     {
-        return Attribute::get(fn($value) => $value ? Storage::disk('public')->url($value) : null);
+        return Attribute::get(fn ($value) => $value ? Storage::url($value) : null);
     }
 }

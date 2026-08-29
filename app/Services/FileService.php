@@ -18,8 +18,8 @@ class FileService
      */
     public static function saveOrUpdate(Model $fileable, FormRequest $request, array|string $fileFieldNames): void
     {
-        // 저장 경로: /테이블명/2026/08/27
-        $path = $fileable->getTable().'/'.date('Y/m/d');
+        $env = config('app.env') === 'production' ? 'production' : 'local';
+        $path = $env.'/'.$fileable->getTable().'/'.date('Y/m/d');
 
         foreach (Arr::wrap($fileFieldNames) as $fieldName) {
             $files = $request->validated($fieldName);
@@ -36,10 +36,11 @@ class FileService
                 if ($target) { // 기존 파일 교체
                     self::handleUploadFile($target, $file, $path, $fieldName);
                     $target->update(); // File::updating 훅이 예전 실물을 삭제
+
                     continue;
                 }
 
-                $target = new File();
+                $target = new File;
                 self::handleUploadFile($target, $file, $path, $fieldName);
                 $fileable->file()->save($target);
             }
@@ -53,11 +54,11 @@ class FileService
     {
         // Apache 가 확장자로 Content-Type 을 판단하므로 확장자를 보존한다(기본 html)
         $ext = strtolower($file->getClientOriginalExtension() ?: 'html');
-        $filePath = Storage::disk('public')->putFileAs($path, $file, Str::random(40).'.'.$ext);
+        $filePath = Storage::putFileAs($path, $file, Str::random(40).'.'.$ext);
 
         $fileModel->name = basename($filePath);
         $fileModel->origin_name = $file->getClientOriginalName();
-        $fileModel->mime_type = $file->getClientMimeType();
+        $fileModel->mime_type = $file->getClientMimeType() ?: 'text/html';
         $fileModel->url = $filePath;
         $fileModel->file_size = $file->getSize();
         $fileModel->field_name = $fieldName;
@@ -81,7 +82,7 @@ class FileService
         }
 
         // getRawOriginal 사용 — pluck('url') 은 접근자를 태워 전체 URL 을 넘긴다
-        Storage::disk('public')->delete(
+        Storage::delete(
             $files->map(fn (File $f) => $f->getRawOriginal('url'))->filter()->all()
         );
 
@@ -106,7 +107,7 @@ class FileService
             return;
         }
 
-        Storage::disk('public')->delete(
+        Storage::delete(
             $files->map(fn (File $file) => $file->getRawOriginal('url'))->filter()->all()
         );
 

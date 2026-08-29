@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Visual;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
@@ -26,6 +27,7 @@ class VisualCrudTest extends TestCase
     public function test_admin_can_create_visual_and_slug_is_auto_generated(): void
     {
         $category = Category::create(['name' => '대시보드', 'slug' => 'dashboard']);
+        $prefix = config('app.env') === 'production' ? 'production' : 'local';
 
         $this->actingAsAdmin()->post(route('admin.visuals.store'), [
             'title' => 'Sales Dashboard',
@@ -47,8 +49,8 @@ class VisualCrudTest extends TestCase
             'mime_type' => 'text/html',
         ]);
         $path = $visual->file->getRawOriginal('url');
-        Storage::disk('public')->assertExists($path);
-        $this->assertMatchesRegularExpression('#^visuals/\d{4}/\d{2}/\d{2}/[A-Za-z0-9]{40}\.html$#', $path);
+        Storage::assertExists($path);
+        $this->assertMatchesRegularExpression('#^'.preg_quote($prefix, '#').'/visuals/\d{4}/\d{2}/\d{2}/[A-Za-z0-9]{40}\.html$#', $path);
     }
 
     public function test_duplicate_title_gets_suffixed_slug(): void
@@ -80,8 +82,8 @@ class VisualCrudTest extends TestCase
         $this->assertNotNull($visual->file);
 
         $path = $visual->file->getRawOriginal('url');
-        Storage::disk('public')->assertExists($path);
-        $this->assertSame($content, Storage::disk('public')->get($path));
+        Storage::assertExists($path);
+        $this->assertSame($content, Storage::get($path));
         $this->assertSame('viz.html', $visual->file->origin_name);
         $this->assertSame(strlen($content), $visual->file->file_size);
     }
@@ -92,6 +94,10 @@ class VisualCrudTest extends TestCase
         $visual = $this->makeVisual(['title' => 'Old', 'slug' => 'old', 'category_id' => $category->id]);
         $oldPath = $visual->file->getRawOriginal('url');
 
+        // 캐시 생성
+        Cache::put("visual:content:{$visual->id}", '<html>old</html>', 3600);
+        $this->assertTrue(Cache::has("visual:content:{$visual->id}"));
+
         $this->actingAsAdmin()->put(route('admin.visuals.update', $visual), [
             'title' => 'New Title',
             'slug' => 'old',
@@ -100,19 +106,25 @@ class VisualCrudTest extends TestCase
         ])->assertRedirect(route('admin.visuals.index'));
 
         $this->assertDatabaseHas('visuals', ['id' => $visual->id, 'title' => 'New Title']);
+        $this->assertFalse(Cache::has("visual:content:{$visual->id}"));
 
         $visual->refresh()->load('file');
         $newPath = $visual->file->getRawOriginal('url');
         $this->assertNotSame($oldPath, $newPath);
-        Storage::disk('public')->assertMissing($oldPath);
-        Storage::disk('public')->assertExists($newPath);
-        $this->assertSame('<html>new</html>', Storage::disk('public')->get($newPath));
+        Storage::assertMissing($oldPath);
+        Storage::assertExists($newPath);
+        $this->assertSame('<html>new</html>', Storage::get($newPath));
+
+        // 삭제 전 캐시 재설정
+        Cache::put("visual:content:{$visual->id}", '<html>new</html>', 3600);
+        $this->assertTrue(Cache::has("visual:content:{$visual->id}"));
 
         $this->actingAsAdmin()->delete(route('admin.visuals.destroy', $visual))
             ->assertRedirect(route('admin.visuals.index'));
 
         $this->assertDatabaseMissing('visuals', ['id' => $visual->id]);
         $this->assertDatabaseMissing('files', ['fileable_id' => $visual->id, 'fileable_type' => Visual::class]);
-        Storage::disk('public')->assertMissing($newPath);
+        $this->assertFalse(Cache::has("visual:content:{$visual->id}"));
+        Storage::assertMissing($newPath);
     }
 }

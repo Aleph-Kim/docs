@@ -9,6 +9,7 @@ use App\Models\Category;
 use App\Models\Visual;
 use App\Services\FileService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -58,6 +59,7 @@ class VisualController extends Controller
         DB::transaction(function () use ($request, $visual, $data) {
             $visual->update($data);
             FileService::saveOrUpdate($visual, $request, 'html_file');
+            Cache::forget("visual:content:{$visual->id}");
         });
 
         return redirect()->route('admin.visuals.index')->with('status', '문서를 수정했습니다.');
@@ -68,6 +70,7 @@ class VisualController extends Controller
         DB::transaction(function () use ($visual) {
             FileService::deleteByModel($visual);
             $visual->delete();
+            Cache::forget("visual:content:{$visual->id}");
         });
 
         return redirect()->route('admin.visuals.index')->with('status', '문서를 삭제했습니다.');

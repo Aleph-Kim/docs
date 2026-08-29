@@ -16,7 +16,7 @@
     <div class="visual-toolbar">
         @if ($visual->file)
             <button type="button" class="btn" id="toggle-full">전체화면</button>
-            <a href="{{ $visual->file->url }}" target="_blank" rel="noopener" class="btn">새 탭에서 열기</a>
+            <a href="{{ route('visuals.render', $visual) }}" target="_blank" rel="noopener" class="btn">새 탭에서 열기</a>
         @endif
         <a href="{{ route('visuals.index') }}" class="btn">목록</a>
     </div>
@@ -29,7 +29,7 @@
             iframe 높이 자동 조절은 원본 HTML 수정이 필요하므로 고정 높이 + 전체화면 토글로 처리한다.
         --}}
         <div class="frame-wrap" id="frame-wrap">
-            <iframe src="{{ $visual->file->url }}"
+            <iframe src="{{ route('visuals.render', $visual) }}"
                     sandbox="allow-scripts allow-popups"
                     title="{{ $visual->title }}"></iframe>
         </div>

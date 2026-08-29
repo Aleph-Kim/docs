@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 // 공개 (로그인 불필요)
 Route::get('/', [VisualController::class, 'index'])->name('visuals.index');
 Route::get('/visuals/{visual:slug}', [VisualController::class, 'show'])->name('visuals.show');
+Route::get('/visuals/{visual:slug}/render', [VisualController::class, 'render'])->name('visuals.render');
 
 // 관리자 로그인
 Route::get('/admin/login', [AuthController::class, 'showLogin'])->name('admin.login');
