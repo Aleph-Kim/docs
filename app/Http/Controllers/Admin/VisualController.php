@@ -5,10 +5,13 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreVisualRequest;
 use App\Http\Requests\Admin\UpdateVisualRequest;
+use App\Http\Resources\VisualResource;
 use App\Models\Category;
 use App\Models\Visual;
 use App\Services\FileService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -30,15 +33,21 @@ class VisualController extends Controller
         ]);
     }
 
-    public function store(StoreVisualRequest $request): RedirectResponse
+    public function store(StoreVisualRequest $request): RedirectResponse|JsonResponse
     {
         $data = $request->safe()->except('html_file');
         $data['slug'] = $this->uniqueSlug($data['slug'] ?? null, $data['title']);
 
-        DB::transaction(function () use ($request, $data) {
+        $visual = DB::transaction(function () use ($request, $data) {
             $visual = Visual::create($data);
             FileService::saveOrUpdate($visual, $request, 'html_file');
+            return $visual;
         });
+
+        if ($request->expectsJson()) {
+            $visual->load('category', 'file');
+            return $this->created(new VisualResource($visual), '문서를 등록했습니다.');
+        }
 
         return redirect()->route('admin.visuals.index')->with('status', '문서를 등록했습니다.');
     }
@@ -51,7 +60,7 @@ class VisualController extends Controller
         ]);
     }
 
-    public function update(UpdateVisualRequest $request, Visual $visual): RedirectResponse
+    public function update(UpdateVisualRequest $request, Visual $visual): RedirectResponse|JsonResponse
     {
         $data = $request->safe()->except('html_file');
         $data['slug'] = $this->uniqueSlug($data['slug'] ?? null, $data['title'], $visual->id);
@@ -62,16 +71,25 @@ class VisualController extends Controller
             Cache::forget("visual:content:{$visual->id}");
         });
 
+        if ($request->expectsJson()) {
+            $visual->load('category', 'file');
+            return $this->success(new VisualResource($visual), '문서를 수정했습니다.');
+        }
+
         return redirect()->route('admin.visuals.index')->with('status', '문서를 수정했습니다.');
     }
 
-    public function destroy(Visual $visual): RedirectResponse
+    public function destroy(Request $request, Visual $visual): RedirectResponse|JsonResponse
     {
         DB::transaction(function () use ($visual) {
             FileService::deleteByModel($visual);
             $visual->delete();
             Cache::forget("visual:content:{$visual->id}");
         });
+
+        if ($request->expectsJson()) {
+            return $this->success(null, '문서를 삭제했습니다.');
+        }
 
         return redirect()->route('admin.visuals.index')->with('status', '문서를 삭제했습니다.');
     }
@@ -87,7 +105,8 @@ class VisualController extends Controller
 
         while (Visual::where('slug', $candidate)
             ->when($ignoreId, fn($q) => $q->whereKeyNot($ignoreId))
-            ->exists()) {
+            ->exists()
+        ) {
             $candidate = $base . '-' . $suffix++;
         }
 

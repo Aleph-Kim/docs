@@ -86,3 +86,37 @@ DB 는 컨테이너에 포함하지 않고 `.env` 의 `DB_HOST` 로 외부 Maria
 - iframe 높이는 고정 + 전체화면 토글 버튼으로 처리됩니다.
 - 툴바의 "새 탭에서 열기"는 렌더링 라우트(`/visuals/{slug}/render`)를 새 탭으로 엽니다.
 
+## 관리자 / 외부 스킬 연동 API
+
+외부 스킬(`docs-upload` CLI/스크립트) 및 프로그래밍 방식으로 카테고리 관리 및 문서를 등록할 수 있도록 `Accept: application/json` 요청을 지원합니다.
+
+### 1. 인증
+- `Authorization: Bearer <DOCS_API_KEY 또는 ADMIN_PASSWORD>`
+- `X-API-KEY: <DOCS_API_KEY 또는 ADMIN_PASSWORD>`
+- 요청 본문 파라미터 `password` 또는 `api_key`
+
+### 2. 엔드포인트
+- `GET /admin/categories`: 카테고리 목록 조회 (JSON)
+- `POST /admin/categories`: 새 카테고리 생성 (`name`, `slug` 전달)
+- `POST /admin/visuals`: 문서 등록
+  - `html_file`: HTML 파일 (필수)
+  - `category_id`: 카테고리 ID (또는 `category`로 이름/slug 전달 가능)
+  - `title` (선택): 미입력 시 HTML 내부 `<title>` / `<h1>` 에서 자동 추출
+  - `description` (선택): 미입력 시 eli5 정의 태그(`<p class="one">`)에서 자동 추출
+  - `slug` (선택): 미입력 시 제목 기반 자동 생성 (중복 시 `-2`, `-3` 자동 부여)
+
+```bash
+# 카테고리 목록 조회
+curl -H "Authorization: Bearer my-admin-password" \
+     -H "Accept: application/json" \
+     http://localhost:8000/admin/categories
+
+# 문서 업로드
+curl -X POST http://localhost:8000/admin/visuals \
+     -H "Authorization: Bearer my-admin-password" \
+     -H "Accept: application/json" \
+     -F "html_file=@/tmp/eli5-build/out.html"
+```
+
+
+

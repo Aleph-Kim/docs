@@ -6,11 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreCategoryRequest extends FormRequest
 {
-    public function authorize(): bool
-    {
-        return $this->session()->get('is_admin') === true;
-    }
-
     public function rules(): array
     {
         return [

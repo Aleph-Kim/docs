@@ -7,51 +7,184 @@
         <h1>카테고리 관리</h1>
     </div>
 
-    <form method="POST" action="{{ route('admin.categories.store') }}" class="search">
+    <div id="category-alert" class="flash" style="display:none; margin-bottom:16px;"></div>
+    <div id="category-error" class="errors" style="display:none; margin-bottom:16px;"></div>
+
+    <form id="create-category-form" method="POST" action="{{ route('admin.categories.store') }}" class="search">
         @csrf
-        <input type="text" name="name" placeholder="카테고리 이름" value="{{ old('name') }}">
-        <input type="text" name="slug" placeholder="슬러그 (선택)" value="{{ old('slug') }}">
-        <button type="submit" class="btn btn-accent">추가</button>
+        <input type="text" name="name" id="new-cat-name" placeholder="카테고리 이름" required>
+        <input type="text" name="slug" id="new-cat-slug" placeholder="슬러그 (선택)">
+        <button type="submit" class="btn btn-accent" id="create-cat-btn">추가</button>
     </form>
 
-    @if ($categories->isEmpty())
-        <div class="empty">카테고리가 없습니다.</div>
-    @else
-        <table class="list">
-            <thead>
-                <tr>
-                    <th>이름</th>
-                    <th>슬러그</th>
-                    <th>문서</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($categories as $category)
+    <div id="categories-container">
+        @if ($categories->isEmpty())
+            <div class="empty" id="empty-state">카테고리가 없습니다.</div>
+        @else
+            <table class="list" id="category-table">
+                <thead>
                     <tr>
-                        <td colspan="2">
-                            <form method="POST" action="{{ route('admin.categories.update', $category) }}"
-                                  class="row-actions" style="align-items:center">
-                                @csrf
-                                @method('PUT')
-                                <input type="text" name="name" value="{{ $category->name }}" style="width:180px">
-                                <input type="text" name="slug" value="{{ $category->slug }}" style="width:160px">
-                                <button type="submit" class="btn">저장</button>
-                            </form>
-                        </td>
-                        <td>{{ $category->visuals_count }}</td>
-                        <td>
-                            <form method="POST" action="{{ route('admin.categories.destroy', $category) }}"
-                                  onsubmit="return confirm('삭제하시겠습니까?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger"
-                                        @disabled($category->visuals_count > 0)>삭제</button>
-                            </form>
-                        </td>
+                        <th>이름</th>
+                        <th>슬러그</th>
+                        <th>문서</th>
+                        <th></th>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
-    @endif
+                </thead>
+                <tbody id="category-tbody">
+                    @foreach ($categories as $category)
+                        <tr id="cat-row-{{ $category->id }}">
+                            <td colspan="2">
+                                <form method="POST" action="{{ route('admin.categories.update', $category) }}"
+                                      class="row-actions category-update-form" style="align-items:center">
+                                    @csrf
+                                    @method('PUT')
+                                    <input type="text" name="name" value="{{ $category->name }}" style="width:180px" required>
+                                    <input type="text" name="slug" value="{{ $category->slug }}" style="width:160px">
+                                    <button type="submit" class="btn">저장</button>
+                                </form>
+                            </td>
+                            <td>{{ $category->visuals_count }}</td>
+                            <td>
+                                <form method="POST" action="{{ route('admin.categories.destroy', $category) }}"
+                                      class="category-delete-form">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger"
+                                            @disabled($category->visuals_count > 0)>삭제</button>
+                                </form>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @endif
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const alertEl = document.getElementById('category-alert');
+    const errorEl = document.getElementById('category-error');
+    const createForm = document.getElementById('create-category-form');
+
+    function showAlert(msg) {
+        errorEl.style.display = 'none';
+        alertEl.innerText = msg;
+        alertEl.style.display = 'block';
+        setTimeout(() => { alertEl.style.display = 'none'; }, 3000);
+    }
+
+    function showError(msg) {
+        alertEl.style.display = 'none';
+        errorEl.innerText = msg;
+        errorEl.style.display = 'block';
+    }
+
+    // 카테고리 추가 비동기 전송
+    createForm.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const submitBtn = document.getElementById('create-cat-btn');
+        submitBtn.disabled = true;
+
+        try {
+            const formData = new FormData(createForm);
+            const res = await fetch(createForm.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            const json = await res.json();
+
+            if (res.ok) {
+                showAlert(json.message || '카테고리를 추가했습니다.');
+                createForm.reset();
+                window.location.reload();
+            } else {
+                const msg = (json.errors && Object.values(json.errors).flat().join('\n')) || json.message || '오류가 발생했습니다.';
+                showError(msg);
+            }
+        } catch (err) {
+            showError('통신 중 오류가 발생했습니다.');
+        } finally {
+            submitBtn.disabled = false;
+        }
+    });
+
+    // 카테고리 수정 비동기 전송
+    document.addEventListener('submit', async function (e) {
+        if (!e.target.classList.contains('category-update-form')) return;
+        e.preventDefault();
+
+        const form = e.target;
+        const btn = form.querySelector('button[type="submit"]');
+        const origText = btn.innerText;
+        btn.disabled = true;
+        btn.innerText = '...';
+
+        try {
+            const formData = new FormData(form);
+            const res = await fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            const json = await res.json();
+
+            if (res.ok) {
+                showAlert(json.message || '카테고리를 수정했습니다.');
+            } else {
+                const msg = (json.errors && Object.values(json.errors).flat().join('\n')) || json.message || '오류가 발생했습니다.';
+                showError(msg);
+            }
+        } catch (err) {
+            showError('통신 중 오류가 발생했습니다.');
+        } finally {
+            btn.disabled = false;
+            btn.innerText = origText;
+        }
+    });
+
+    // 카테고리 삭제 비동기 전송
+    document.addEventListener('submit', async function (e) {
+        if (!e.target.classList.contains('category-delete-form')) return;
+        e.preventDefault();
+
+        if (!confirm('삭제하시겠습니까?')) return;
+
+        const form = e.target;
+        const row = form.closest('tr');
+        const btn = form.querySelector('button[type="submit"]');
+        btn.disabled = true;
+
+        try {
+            const formData = new FormData(form);
+            const res = await fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            const json = await res.json();
+
+            if (res.ok) {
+                showAlert(json.message || '카테고리를 삭제했습니다.');
+                row.remove();
+            } else {
+                showError(json.message || '삭제에 실패했습니다.');
+                btn.disabled = false;
+            }
+        } catch (err) {
+            showError('통신 중 오류가 발생했습니다.');
+            btn.disabled = false;
+        }
+    });
+});
+</script>
 @endsection
