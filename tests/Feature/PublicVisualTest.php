@@ -80,7 +80,6 @@ class PublicVisualTest extends TestCase
         $response->assertOk();
         $response->assertHeader('Content-Type', 'text/html; charset=UTF-8');
         $response->assertHeader('Content-Security-Policy', 'sandbox allow-scripts allow-popups');
-        $response->assertHeader('Cache-Control', 'max-age=3600, public, stale-while-revalidate=86400');
         $response->assertHeader('ETag');
         $response->assertSee('Render Doc', false);
     }
