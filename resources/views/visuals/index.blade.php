@@ -1,6 +1,68 @@
 @extends('layouts.app')
 
-@section('title', '문서 목록')
+@php
+    $currentCategory = $categories->firstWhere('id', (int) $activeCategory);
+    $pageTitle = $currentCategory ? "{$currentCategory->name} 문서 목록" : '문서 목록';
+    $pageDesc = $currentCategory
+        ? "{$currentCategory->name} 카테고리의 완결형 HTML 시각화 문서 아카이브입니다."
+        : '기술 개념 설명(eli5), 인터랙티브 다이어그램, 아키텍처 가이드 등의 완결형 HTML 시각화 문서 아카이브입니다.';
+    $metaRobots = $keyword ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
+
+    $schemaItemList = $visuals->map(function ($visual, $index) {
+        return [
+            '@type' => 'ListItem',
+            'position' => $index + 1,
+            'url' => route('visuals.show', $visual->slug),
+            'name' => $visual->title,
+        ];
+    })->values()->all();
+
+    $schemaGraph = [
+        '@context' => 'https://schema.org',
+        '@graph' => [
+            [
+                '@type' => 'WebSite',
+                '@id' => route('visuals.index') . '#website',
+                'url' => route('visuals.index'),
+                'name' => 'Docs',
+                'description' => 'Claude로 생성한 완결형 단일 HTML 문서 아카이브',
+                'inLanguage' => 'ko-KR',
+                'potentialAction' => [
+                    '@type' => 'SearchAction',
+                    'target' => [
+                        '@type' => 'EntryPoint',
+                        'urlTemplate' => route('visuals.index') . '?q={search_term_string}',
+                    ],
+                    'query-input' => 'required name=search_term_string',
+                ],
+            ],
+            [
+                '@type' => 'CollectionPage',
+                '@id' => url()->current() . '#collection',
+                'url' => url()->current(),
+                'name' => $pageTitle,
+                'description' => $pageDesc,
+                'isPartOf' => [
+                    '@id' => route('visuals.index') . '#website',
+                ],
+                'mainEntity' => [
+                    '@type' => 'ItemList',
+                    'itemListElement' => $schemaItemList,
+                ],
+            ],
+        ],
+    ];
+@endphp
+
+@section('title', $pageTitle)
+@section('meta_description', $pageDesc)
+@section('meta_robots', $metaRobots)
+
+@section('structured_data')
+    <script type="application/ld+json">
+    {!! json_encode($schemaGraph, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
+    </script>
+@endsection
 
 @section('content')
     <div class="page-head">
@@ -36,7 +98,7 @@
                     @if ($visual->description)
                         <div class="card-desc">{{ $visual->description }}</div>
                     @endif
-                    <div class="card-date">{{ $visual->created_at->format('Y-m-d') }}</div>
+                    <time class="card-date" datetime="{{ $visual->created_at->toIso8601String() }}">{{ $visual->created_at->format('Y-m-d') }}</time>
                 </a>
             @endforeach
         </div>

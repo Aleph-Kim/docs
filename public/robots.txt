@@ -1,2 +1,39 @@
+# Robots.txt for Docs
 User-agent: *
-Disallow:
+Allow: /
+Disallow: /admin/
+Disallow: /visuals/*/render
+
+# AI & LLM Crawlers (GEO / AEO Friendly)
+User-agent: GPTBot
+Allow: /
+Disallow: /admin/
+Disallow: /visuals/*/render
+
+User-agent: ClaudeBot
+Allow: /
+Disallow: /admin/
+Disallow: /visuals/*/render
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /admin/
+Disallow: /visuals/*/render
+
+User-agent: Google-Extended
+Allow: /
+Disallow: /admin/
+Disallow: /visuals/*/render
+
+User-agent: Applebot-Extended
+Allow: /
+Disallow: /admin/
+Disallow: /visuals/*/render
+
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /admin/
+Disallow: /visuals/*/render
+
+# XML Sitemap
+Sitemap: /sitemap.xml

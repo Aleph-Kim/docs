@@ -3,8 +3,28 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="robots" content="noindex">
-    <title>@yield('title', 'Docs')</title>
+    <meta name="robots" content="@yield('meta_robots', request()->is('admin*') ? 'noindex, nofollow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1')">
+    <title>{{ View::hasSection('title') ? View::yieldContent('title') . ' - Docs' : 'Docs - 완결형 HTML 문서 아카이브' }}</title>
+    <meta name="description" content="@yield('meta_description', 'Claude로 생성한 완결형 단일 HTML 문서 및 인터랙티브 시각화 아카이브')">
+    <link rel="canonical" href="@yield('canonical_url', url()->current())">
+
+    {{-- Open Graph --}}
+    <meta property="og:site_name" content="Docs">
+    <meta property="og:title" content="@yield('og_title', View::hasSection('title') ? View::yieldContent('title') . ' - Docs' : 'Docs - 완결형 HTML 문서 아카이브')">
+    <meta property="og:description" content="@yield('og_description', View::hasSection('meta_description') ? View::yieldContent('meta_description') : 'Claude로 생성한 완결형 단일 HTML 문서 및 인터랙티브 시각화 아카이브')">
+    <meta property="og:type" content="@yield('og_type', 'website')">
+    <meta property="og:url" content="@yield('canonical_url', url()->current())">
+    <meta property="og:locale" content="ko_KR">
+    @yield('og_extra')
+
+    {{-- Twitter Cards --}}
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="@yield('og_title', View::hasSection('title') ? View::yieldContent('title') . ' - Docs' : 'Docs - 완결형 HTML 문서 아카이브')">
+    <meta name="twitter:description" content="@yield('og_description', View::hasSection('meta_description') ? View::yieldContent('meta_description') : 'Claude로 생성한 완결형 단일 HTML 문서 및 인터랙티브 시각화 아카이브')">
+
+    {{-- Schema.org / JSON-LD Structured Data --}}
+    @yield('structured_data')
+
     @vite('resources/css/app.css')
 </head>
 <body>

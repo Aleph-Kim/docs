@@ -60,6 +60,7 @@ class VisualController extends Controller
             'Content-Type' => 'text/html; charset=UTF-8',
             'Content-Security-Policy' => 'sandbox allow-scripts allow-popups',
             'X-Content-Type-Options' => 'nosniff',
+            'X-Robots-Tag' => 'noindex, follow',
             'ETag' => $etag,
         ]);
     }

@@ -568,9 +568,51 @@ table.list td.slug {
     white-space: nowrap;
 }
 
+/* 브레드크럼 */
+.breadcrumbs {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    font-size: 15px;
+    color: var(--ink-4);
+    margin-bottom: 14px;
+}
+
+.breadcrumbs a {
+    color: var(--ink-3);
+}
+
+.breadcrumbs a:hover {
+    color: var(--accent);
+}
+
+.breadcrumbs .sep {
+    color: var(--line-2);
+}
+
+.breadcrumbs .current {
+    color: var(--ink);
+    font-weight: normal;
+}
+
 /* 상세 페이지 */
 .visual-meta {
     margin-bottom: 16px;
+}
+
+.cat-link {
+    color: var(--accent);
+}
+
+.cat-link:hover {
+    text-decoration: underline;
+}
+
+.visual-desc {
+    margin-top: 6px;
+    color: var(--ink-2);
+    line-height: 1.6;
 }
 
 .visual-meta h1 {
