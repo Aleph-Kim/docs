@@ -251,15 +251,46 @@ main.wrap {
 }
 
 /* 폼 */
+.form-container {
+    max-width: 760px;
+    margin: 0 auto;
+}
+
+.form-card {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 28px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+@media (max-width: 640px) {
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+}
+
 .field {
-    margin-bottom: 16px;
+    margin-bottom: 18px;
 }
 
 .field label {
     display: block;
     font-size: 16px;
     color: var(--ink-2);
-    margin-bottom: 4px;
+    margin-bottom: 6px;
+}
+
+.req {
+    color: #b91c1c;
+    margin-left: 2px;
 }
 
 input[type='text'],
@@ -267,13 +298,23 @@ input[type='password'],
 select,
 textarea {
     width: 100%;
-    padding: 6px 8px;
+    padding: 8px 10px;
     border: 1px solid var(--line-2);
     border-radius: 4px;
     background: var(--bg);
     color: var(--ink);
     font-family: inherit;
     font-size: 18px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+input[type='text']:focus,
+input[type='password']:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-soft);
 }
 
 textarea {
@@ -290,15 +331,176 @@ textarea.code {
 }
 
 .field .hint {
-    font-size: 16px;
+    font-size: 15px;
     color: var(--ink-4);
     margin-top: 4px;
 }
 
 .field .err {
-    font-size: 16px;
+    font-size: 15px;
     color: #b91c1c;
     margin-top: 4px;
+}
+
+/* 커스텀 셀렉트 */
+.custom-select {
+    position: relative;
+    width: 100%;
+    user-select: none;
+}
+
+.custom-select-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--line-2);
+    border-radius: 4px;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 18px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    text-align: left;
+}
+
+.custom-select.is-open .custom-select-trigger,
+.custom-select-trigger:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-soft);
+}
+
+.custom-select-arrow {
+    font-size: 11px;
+    color: var(--ink-3);
+    transition: transform 0.2s ease;
+    margin-left: 8px;
+    flex-shrink: 0;
+}
+
+.custom-select.is-open .custom-select-arrow {
+    transform: rotate(180deg);
+}
+
+.custom-select-options {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    z-index: 40;
+    background: var(--bg);
+    border: 1px solid var(--line-2);
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+.custom-select.is-open .custom-select-options {
+    display: block;
+}
+
+.custom-select-option {
+    padding: 8px 12px;
+    font-size: 16px;
+    color: var(--ink-2);
+    cursor: pointer;
+    transition: background-color 0.1s ease, color 0.1s ease;
+}
+
+.custom-select-option:hover {
+    background: var(--card);
+    color: var(--accent);
+}
+
+.custom-select-option.is-selected {
+    background: var(--accent-soft);
+    color: var(--ink);
+    font-weight: bold;
+}
+
+/* 파일 업로드 드롭존 */
+.file-dropzone {
+    border: 2px dashed var(--line-2);
+    border-radius: 6px;
+    padding: 24px 16px;
+    background: var(--bg);
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.file-dropzone:hover,
+.file-dropzone.is-dragover {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+}
+
+.file-dropzone-icon {
+    font-size: 24px;
+    margin-bottom: 6px;
+    color: var(--ink-3);
+}
+
+.file-dropzone-text {
+    font-size: 16px;
+    color: var(--ink-2);
+    margin-bottom: 4px;
+}
+
+.file-dropzone-hint {
+    font-size: 14px;
+    color: var(--ink-4);
+}
+
+.file-selected-box {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: var(--bg);
+    border: 1px solid var(--line-2);
+    border-radius: 4px;
+    margin-top: 8px;
+}
+
+.file-selected-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    color: var(--ink);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.file-selected-name {
+    font-weight: bold;
+    color: var(--accent);
+}
+
+.file-selected-size {
+    font-size: 14px;
+    color: var(--ink-4);
+}
+
+.file-remove-btn {
+    background: none;
+    border: none;
+    color: var(--ink-3);
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+}
+
+.file-remove-btn:hover {
+    color: #b91c1c;
 }
 
 .form-actions {
