@@ -61,13 +61,24 @@
                 return window.matchMedia('(max-width: 768px)').matches;
             }
 
+            function hasSeenToday() {
+                return document.cookie.split('; ').indexOf(KEY + '=1') !== -1;
+            }
+
+            function markSeen() {
+                // 자정에 만료시켜 하루에 한 번만 노출
+                var midnight = new Date();
+                midnight.setHours(24, 0, 0, 0);
+                document.cookie = KEY + '=1; expires=' + midnight.toUTCString() + '; path=/; SameSite=Lax';
+            }
+
             function closeModal() {
                 modal.classList.remove('is-open');
             }
 
-            if (isMobile() && !localStorage.getItem(KEY)) {
+            if (isMobile() && !hasSeenToday()) {
                 modal.classList.add('is-open');
-                localStorage.setItem(KEY, '1');
+                markSeen();
             }
 
             okBtn.addEventListener('click', closeModal);
