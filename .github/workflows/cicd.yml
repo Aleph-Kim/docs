@@ -26,8 +26,19 @@ jobs:
         extensions: mbstring, pdo_sqlite, sqlite3, bcmath, exif, pcntl
         coverage: none
 
+    - name: Get Composer Cache Directory # Composer 캐시 디렉토리 조회
+      id: composer-cache
+      run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+    - name: Cache Composer dependencies # Composer 의존성 캐시
+      uses: actions/cache@v4
+      with:
+        path: ${{ steps.composer-cache.outputs.dir }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        restore-keys: ${{ runner.os }}-composer-
+
     - name: Install Composer dependencies # composer 의존성 설치
-      run: composer install --no-interaction --prefer-dist
+      run: composer install --no-interaction --prefer-dist --no-progress
 
     - name: Prepare environment file # .env 준비 및 APP_KEY 생성
       run: |
@@ -51,7 +62,6 @@ jobs:
 
   build:
     runs-on: ubuntu-22.04
-    needs: test # 테스트 통과 후 빌드
 
     steps:
     - name: Checkout repository # 저장소 체크아웃
@@ -67,7 +77,7 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Build and push # 이미지 빌드 및 push (GitHub Actions 캐시로 레이어 재사용)
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v6
       with:
         context: .
         push: true
@@ -79,7 +89,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-22.04
-    needs: build # build 완료 후 실행
+    needs: [test, build] # test와 build 모두 완료 후 실행
 
     steps:
     - name: Deploy to server # 서버에 SSH 접속하여 배포
