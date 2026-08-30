@@ -27,6 +27,22 @@ class SeoController extends Controller
     }
 
     /**
+     * RSS 2.0 피드 제공
+     */
+    public function rss(): Response
+    {
+        $visuals = Visual::with('category')->latest('created_at')->take(50)->get();
+
+        $content = view('seo.rss', [
+            'visuals' => $visuals,
+        ])->render();
+
+        return response($content, 200, [
+            'Content-Type' => 'application/rss+xml; charset=UTF-8',
+        ]);
+    }
+
+    /**
      * AI 에이전트 및 LLM 검색엔진을 위한 llms.txt 표준 요약 제공
      */
     public function llms(): Response

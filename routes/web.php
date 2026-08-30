@@ -7,8 +7,9 @@ use App\Http\Controllers\SeoController;
 use App\Http\Controllers\VisualController;
 use Illuminate\Support\Facades\Route;
 
-// SEO / GEO / AEO
+// SEO / GEO / AEO / Feeds
 Route::get('/sitemap.xml', [SeoController::class, 'sitemap'])->name('sitemap');
+Route::get('/rss.xml', [SeoController::class, 'rss'])->name('rss');
 Route::get('/llms.txt', [SeoController::class, 'llms'])->name('llms.txt');
 Route::get('/llms-full.txt', [SeoController::class, 'llmsFull'])->name('llms-full.txt');
 
