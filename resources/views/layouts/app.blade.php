@@ -14,6 +14,7 @@
     <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <link rel="manifest" href="/site.webmanifest">
+    <link rel="alternate" type="application/rss+xml" title="Docs RSS Feed" href="{{ route('rss') }}">
     <meta name="theme-color" content="#0f766e">
 
     {{-- Open Graph --}}

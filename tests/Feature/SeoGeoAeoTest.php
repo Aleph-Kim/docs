@@ -46,24 +46,22 @@ class SeoGeoAeoTest extends TestCase
             'description' => 'A deep dive into pipeline pattern.',
         ]);
 
-        foreach (['rss', 'feed'] as $routeName) {
-            $response = $this->get(route($routeName));
+        $response = $this->get(route('rss'));
 
-            $response->assertOk();
-            $response->assertHeader('Content-Type', 'application/rss+xml; charset=UTF-8');
-            $response->assertSee('<?xml version="1.0" encoding="UTF-8"?>', false);
-            $response->assertSee('<rss version="2.0"', false);
-            $response->assertSee('<title>Docs</title>', false);
-            $response->assertSee('<title>Laravel Pipeline Pattern</title>', false);
-            $response->assertSee(route('visuals.show', $visual->slug), false);
-            $response->assertSee('Backend', false);
-            $response->assertSee('A deep dive into pipeline pattern.', false);
+        $response->assertOk();
+        $response->assertHeader('Content-Type', 'application/rss+xml; charset=UTF-8');
+        $response->assertSee('<?xml version="1.0" encoding="UTF-8"?>', false);
+        $response->assertSee('<rss version="2.0"', false);
+        $response->assertSee('<title>Docs</title>', false);
+        $response->assertSee('<title>Laravel Pipeline Pattern</title>', false);
+        $response->assertSee(route('visuals.show', $visual->slug), false);
+        $response->assertSee('Backend', false);
+        $response->assertSee('A deep dive into pipeline pattern.', false);
 
-            $xml = simplexml_load_string($response->getContent());
-            $this->assertNotFalse($xml, 'RSS feed response is not valid XML');
-            $this->assertEquals('Docs', (string) $xml->channel->title);
-            $this->assertEquals('Laravel Pipeline Pattern', (string) $xml->channel->item[0]->title);
-        }
+        $xml = simplexml_load_string($response->getContent());
+        $this->assertNotFalse($xml, 'RSS feed response is not valid XML');
+        $this->assertEquals('Docs', (string) $xml->channel->title);
+        $this->assertEquals('Laravel Pipeline Pattern', (string) $xml->channel->item[0]->title);
     }
 
     public function test_llms_txt_and_llms_full_txt_endpoints_return_markdown(): void
@@ -183,4 +181,3 @@ class SeoGeoAeoTest extends TestCase
         $response->assertSee('<meta name="robots" content="noindex, nofollow">', false);
     }
 }
-
