@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -34,25 +35,30 @@
     <meta name="twitter:description" content="@yield('og_description', View::hasSection('meta_description') ? View::yieldContent('meta_description') : '인터랙티브 시각화 및 기술 문서를 저장하고 열람하는 아카이브 Docs')">
     <meta name="twitter:image" content="@yield('og_image', asset('og-image.png'))">
 
+    {{-- Naver Site Verification --}}
+    <meta name="naver-site-verification" content="0fb7be55902809a78da2aa44b736b2e882f43c01" />
+
+
     {{-- Schema.org / JSON-LD Structured Data --}}
     @yield('structured_data')
 
     @vite('resources/css/app.css')
 </head>
+
 <body>
     <header class="site-header">
         <div class="wrap">
             <a href="{{ route('visuals.index') }}" class="site-name">Docs</a>
             <nav class="site-nav">
                 @if (session('is_admin'))
-                    <a href="{{ route('admin.visuals.index') }}">문서 관리</a>
-                    <a href="{{ route('admin.categories.index') }}">카테고리</a>
-                    <form method="POST" action="{{ route('admin.logout') }}">
-                        @csrf
-                        <button type="submit" class="btn">로그아웃</button>
-                    </form>
+                <a href="{{ route('admin.visuals.index') }}">문서 관리</a>
+                <a href="{{ route('admin.categories.index') }}">카테고리</a>
+                <form method="POST" action="{{ route('admin.logout') }}">
+                    @csrf
+                    <button type="submit" class="btn">로그아웃</button>
+                </form>
                 @else
-                    <a href="{{ route('admin.login') }}">로그인</a>
+                <a href="{{ route('admin.login') }}">로그인</a>
                 @endif
             </nav>
         </div>
@@ -60,15 +66,15 @@
 
     <main class="wrap">
         @if (session('status'))
-            <div class="flash">{{ session('status') }}</div>
+        <div class="flash">{{ session('status') }}</div>
         @endif
 
         @if ($errors->any())
-            <div class="errors">
-                @foreach ($errors->all() as $error)
-                    <div>{{ $error }}</div>
-                @endforeach
-            </div>
+        <div class="errors">
+            @foreach ($errors->all() as $error)
+            <div>{{ $error }}</div>
+            @endforeach
+        </div>
         @endif
 
         @yield('content')
@@ -84,7 +90,7 @@
     </div>
 
     <script>
-        (function () {
+        (function() {
             var KEY = 'visuals-mobile-notice-seen';
             var modal = document.getElementById('responsive-modal');
             var okBtn = document.getElementById('responsive-modal-ok');
@@ -114,13 +120,14 @@
             }
 
             okBtn.addEventListener('click', closeModal);
-            modal.addEventListener('click', function (e) {
+            modal.addEventListener('click', function(e) {
                 if (e.target === modal) closeModal();
             });
-            document.addEventListener('keydown', function (e) {
+            document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape') closeModal();
             });
         })();
     </script>
 </body>
+
 </html>
