@@ -23,7 +23,11 @@ class SeoGeoAeoTest extends TestCase
 
         $response->assertOk();
         $response->assertHeader('Content-Type', 'application/xml; charset=UTF-8');
+        $response->assertSee('<?xml version="1.0" encoding="UTF-8"?>', false);
         $response->assertSee('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">', false);
+
+        $xml = simplexml_load_string($response->getContent());
+        $this->assertNotFalse($xml, 'Sitemap response is not valid XML');
         $response->assertSee(route('visuals.index'), false);
         $response->assertSee(route('visuals.index', ['category' => $cat->id]), false);
         $response->assertSee(route('visuals.show', $visual->slug), false);
