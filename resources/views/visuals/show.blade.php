@@ -90,7 +90,8 @@
         <header class="visual-meta">
             <h1 itemprop="headline">{{ $visual->title }}</h1>
             <div class="muted small">
-                <a href="{{ route('visuals.index', ['category' => $visual->category->id]) }}" class="cat-link" itemprop="articleSection">{{ $visual->category->name }}</a>
+                <a href="{{ route('visuals.index', ['category' => $visual->category->id]) }}" class="cat-link"
+                   itemprop="articleSection">{{ $visual->category->name }}</a>
                 ·
                 <time itemprop="datePublished" datetime="{{ $visual->created_at->toIso8601String() }}">
                     {{ $visual->created_at->format('Y-m-d') }}
@@ -112,7 +113,14 @@
         @if ($visual->file)
             <section class="visual-content" aria-label="문서 뷰어">
                 <div class="frame-wrap" id="frame-wrap">
+                    <div class="frame-loader" id="frame-loader">
+                        <div class="frame-loader-bar-wrap">
+                            <div class="frame-loader-bar" id="frame-loader-bar"></div>
+                        </div>
+                        <div class="frame-loader-text">문서를 불러오는 중...</div>
+                    </div>
                     <iframe src="{{ route('visuals.render', $visual) }}"
+                            id="visual-frame"
                             sandbox="allow-scripts allow-popups"
                             title="{{ $visual->title }}"></iframe>
                 </div>
@@ -124,21 +132,66 @@
                     var wrap = document.getElementById('frame-wrap');
                     var toggle = document.getElementById('toggle-full');
                     var exit = document.getElementById('exit-full');
+                    var loader = document.getElementById('frame-loader');
+                    var bar = document.getElementById('frame-loader-bar');
+                    var iframe = document.getElementById('visual-frame');
 
                     function setFull(on) {
                         wrap.classList.toggle('is-full', on);
                         document.body.style.overflow = on ? 'hidden' : '';
                     }
 
-                    toggle.addEventListener('click', function () {
-                        setFull(true);
-                    });
-                    exit.addEventListener('click', function () {
-                        setFull(false);
-                    });
+                    if (toggle) {
+                        toggle.addEventListener('click', function () {
+                            setFull(true);
+                        });
+                    }
+                    if (exit) {
+                        exit.addEventListener('click', function () {
+                            setFull(false);
+                        });
+                    }
                     document.addEventListener('keydown', function (e) {
                         if (e.key === 'Escape') setFull(false);
                     });
+
+                    if (iframe && loader && bar) {
+                        var progress = 12;
+                        bar.style.width = progress + '%';
+
+                        var progressTimer = setInterval(function () {
+                            if (progress < 70) {
+                                progress += Math.random() * 12 + 6;
+                            } else if (progress < 90) {
+                                progress += Math.random() * 4 + 1;
+                            }
+                            if (progress > 90) progress = 90;
+                            bar.style.width = progress + '%';
+                        }, 120);
+
+                        function finishLoading() {
+                            if (!loader) return;
+                            clearInterval(progressTimer);
+                            bar.style.width = '100%';
+                            setTimeout(function () {
+                                loader.classList.add('is-hidden');
+                                setTimeout(function () {
+                                    if (loader && loader.parentNode) {
+                                        loader.style.display = 'none';
+                                    }
+                                }, 300);
+                            }, 150);
+                        }
+
+                        iframe.addEventListener('load', finishLoading);
+                        iframe.addEventListener('error', finishLoading);
+
+                        setTimeout(function () {
+                            if (loader && !loader.classList.contains('is-hidden')) {
+                                finishLoading();
+                            }
+                        }, 10000);
+                    }
                 })();
             </script>
         @else

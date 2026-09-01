@@ -627,7 +627,9 @@ table.list td.slug {
 }
 
 .frame-wrap {
+    position: relative;
     overflow: hidden;
+    background: var(--card);
 }
 
 .frame-wrap iframe {
@@ -636,6 +638,48 @@ table.list td.slug {
     height: 720px;
     border: 0;
     background: #fff;
+}
+
+.frame-loader {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--card);
+    z-index: 10;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.frame-loader.is-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.frame-loader-bar-wrap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--line-2);
+    overflow: hidden;
+}
+
+.frame-loader-bar {
+    height: 100%;
+    width: 0;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    transition: width 0.15s ease-out;
+}
+
+.frame-loader-text {
+    font-size: 16px;
+    color: var(--ink-3);
+    user-select: none;
 }
 
 .frame-wrap.is-full {
@@ -658,7 +702,7 @@ table.list td.slug {
     z-index: 51;
 }
 
-.frame-wrap.is-full + .frame-exit {
+.frame-wrap.is-full+.frame-exit {
     display: inline-block;
 }
 
@@ -668,7 +712,7 @@ table.list td.slug {
     font-size: 16px;
 }
 
-.pagination-wrap nav > div:first-child {
+.pagination-wrap nav>div:first-child {
     display: none;
 }
 

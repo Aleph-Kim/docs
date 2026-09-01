@@ -109,10 +109,10 @@ class SeoGeoAeoTest extends TestCase
         // Open Graph & Image
         $response->assertSee('<meta property="og:site_name" content="Docs">', false);
         $response->assertSee('<meta property="og:type" content="website">', false);
-        $response->assertSee('<meta property="og:image" content="http://localhost/og-image.png">', false);
+        $response->assertSee('<meta property="og:image" content="' . asset('og-image.png') . '">', false);
         // Twitter
         $response->assertSee('<meta name="twitter:card" content="summary_large_image">', false);
-        $response->assertSee('<meta name="twitter:image" content="http://localhost/og-image.png">', false);
+        $response->assertSee('<meta name="twitter:image" content="' . asset('og-image.png') . '">', false);
         // Favicons & Manifest
         $response->assertSee('<link rel="icon" href="/favicon.svg" type="image/svg+xml">', false);
         $response->assertSee('<link rel="manifest" href="/site.webmanifest">', false);

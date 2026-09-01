@@ -66,6 +66,9 @@ class PublicVisualTest extends TestCase
         $response->assertOk();
         $response->assertSee(route('visuals.render', $visual), false);
         $response->assertSee('sandbox="allow-scripts allow-popups"', false);
+        $response->assertSee('id="frame-loader"', false);
+        $response->assertSee('id="frame-loader-bar"', false);
+        $response->assertSee('id="visual-frame"', false);
 
         Storage::assertExists($path);
         $this->assertStringContainsString('Raw Doc', Storage::get($path));
