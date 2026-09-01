@@ -29,8 +29,8 @@ class SupabaseStorageTest extends TestCase
     {
         Config::set('app.env', 'production');
 
-        $category = Category::create(['name' => '인터랙티브', 'slug' => 'interactive']);
-        $visual = Visual::create([
+        $category = Category::factory()->create(['name' => '인터랙티브', 'slug' => 'interactive']);
+        $visual = Visual::factory()->create([
             'title' => 'Production Chart',
             'slug' => 'production-chart',
             'category_id' => $category->id,

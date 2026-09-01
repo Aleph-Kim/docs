@@ -19,11 +19,18 @@ use Illuminate\View\View;
 
 class VisualController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        $visuals = Visual::with('category')->latest()->paginate(20);
+        $visuals = Visual::with('category')
+            ->search($request->query('q'))
+            ->latest()
+            ->paginate(20)
+            ->withQueryString();
 
-        return view('admin.visuals.index', compact('visuals'));
+        return view('admin.visuals.index', [
+            'visuals' => $visuals,
+            'keyword' => (string) $request->query('q'),
+        ]);
     }
 
     public function create(): View

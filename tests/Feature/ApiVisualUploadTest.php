@@ -63,8 +63,8 @@ HTML;
 
     public function test_auth_via_bearer_token_can_list_categories(): void
     {
-        Category::create(['name' => '인터랙티브', 'slug' => 'interactive']);
-        Category::create(['name' => '다이어그램', 'slug' => 'diagram']);
+        Category::factory()->create(['name' => '인터랙티브', 'slug' => 'interactive']);
+        Category::factory()->create(['name' => '다이어그램', 'slug' => 'diagram']);
 
         $response = $this->withHeader('Authorization', 'Bearer test-api-key')
             ->getJson(route('admin.categories.index'));
@@ -96,7 +96,7 @@ HTML;
 
     public function test_auth_via_bearer_token_can_upload_visual(): void
     {
-        $category = Category::create(['name' => '인터랙티브', 'slug' => 'interactive']);
+        $category = Category::factory()->create(['name' => '인터랙티브', 'slug' => 'interactive']);
         $html = $this->sampleEli5Html();
 
         $response = $this->withHeader('Authorization', 'Bearer test-api-key')
@@ -128,7 +128,7 @@ HTML;
 
     public function test_auth_via_x_api_key_header_succeeds(): void
     {
-        $category = Category::create(['name' => '인터랙티브', 'slug' => 'interactive']);
+        $category = Category::factory()->create(['name' => '인터랙티브', 'slug' => 'interactive']);
         $html = $this->sampleEli5Html('클린 아키텍처');
 
         $response = $this->withHeader('X-API-KEY', 'test-api-key')
@@ -148,7 +148,7 @@ HTML;
             'admin.api_key' => null,
             'admin.password' => 'my-super-password',
         ]);
-        $category = Category::create(['name' => '인터랙티브', 'slug' => 'interactive']);
+        $category = Category::factory()->create(['name' => '인터랙티브', 'slug' => 'interactive']);
         $html = $this->sampleEli5Html('도메인 주도 설계');
 
         $response = $this->post(route('admin.visuals.store'), [
@@ -164,7 +164,7 @@ HTML;
 
     public function test_auth_via_admin_session_succeeds(): void
     {
-        $category = Category::create(['name' => '인터랙티브', 'slug' => 'interactive']);
+        $category = Category::factory()->create(['name' => '인터랙티브', 'slug' => 'interactive']);
         $html = $this->sampleEli5Html('세션 인증 테스트');
 
         $response = $this->withSession(['is_admin' => true])
@@ -180,7 +180,7 @@ HTML;
 
     public function test_explicit_params_override_extracted_metadata(): void
     {
-        $customCategory = Category::create(['name' => '다이어그램', 'slug' => 'diagram']);
+        $customCategory = Category::factory()->create(['name' => '다이어그램', 'slug' => 'diagram']);
         $html = $this->sampleEli5Html('HTML 제목', 'HTML 설명');
 
         $response = $this->withHeader('Authorization', 'Bearer test-api-key')
@@ -209,7 +209,7 @@ HTML;
 
     public function test_duplicate_slug_gets_numeric_suffix(): void
     {
-        $category = Category::create(['name' => '인터랙티브', 'slug' => 'interactive']);
+        $category = Category::factory()->create(['name' => '인터랙티브', 'slug' => 'interactive']);
         $html = '<html><head><title>Duplicate Title</title></head><body>1</body></html>';
 
         $this->withHeader('Authorization', 'Bearer test-api-key')
@@ -231,7 +231,7 @@ HTML;
 
     public function test_missing_html_file_returns_422(): void
     {
-        $category = Category::create(['name' => '인터랙티브', 'slug' => 'interactive']);
+        $category = Category::factory()->create(['name' => '인터랙티브', 'slug' => 'interactive']);
 
         $response = $this->withHeader('Authorization', 'Bearer test-api-key')
             ->post(route('admin.visuals.store'), [

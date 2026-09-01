@@ -706,35 +706,75 @@ table.list td.slug {
     display: inline-block;
 }
 
-/* 페이지네이션 (Laravel 기본 뷰) */
+/* 페이지네이션 */
 .pagination-wrap {
-    margin-top: 24px;
-    font-size: 16px;
+    margin-top: 32px;
+    display: flex;
+    justify-content: center;
 }
 
-.pagination-wrap nav>div:first-child {
-    display: none;
+.pagination {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    flex-wrap: wrap;
+    user-select: none;
 }
 
-.pagination-wrap svg {
-    width: 16px;
-    height: 16px;
-    display: inline;
-}
-
-.pagination-wrap a,
-.pagination-wrap span {
-    display: inline-block;
-    padding: 4px 8px;
-    margin-right: 4px;
+.pagination .page-item {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
     border: 1px solid var(--line-2);
     border-radius: 4px;
-    color: var(--ink-3);
+    background: var(--card);
+    color: var(--ink-2);
+    font-size: 15px;
+    line-height: 1;
+    text-decoration: none;
+    font-family: inherit;
+    transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
 }
 
-.pagination-wrap a:hover {
-    text-decoration: none;
+.pagination a.page-item:hover {
     border-color: var(--accent);
+    background: #ffffff;
+    color: var(--accent);
+    text-decoration: none;
+}
+
+.pagination .page-item.is-active {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--accent);
+    font-weight: bold;
+    cursor: default;
+}
+
+.pagination .page-item.is-disabled {
+    border-color: var(--line);
+    color: var(--ink-4);
+    background: var(--bg);
+    cursor: not-allowed;
+    opacity: 0.45;
+}
+
+.pagination .page-item.is-dots {
+    border: none;
+    background: transparent;
+    color: var(--ink-4);
+    cursor: default;
+    width: 20px;
+}
+
+.pagination .page-item svg {
+    display: block;
+    width: 14px;
+    height: 14px;
 }
 
 /* 로그인 */

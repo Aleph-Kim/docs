@@ -88,7 +88,11 @@
     </form>
 
     @if ($visuals->isEmpty())
-        <div class="empty">등록된 문서가 없습니다.</div>
+        @if ($keyword !== '' || $activeCategory)
+            <div class="empty">검색 결과가 없습니다.</div>
+        @else
+            <div class="empty">등록된 문서가 없습니다.</div>
+        @endif
     @else
         <div class="grid">
             @foreach ($visuals as $visual)

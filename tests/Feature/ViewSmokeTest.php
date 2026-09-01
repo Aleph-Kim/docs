@@ -13,7 +13,7 @@ class ViewSmokeTest extends TestCase
     public function test_all_pages_render(): void
     {
         config(['admin.id' => 'admin', 'admin.password' => 'secret']);
-        $cat = Category::create(['name' => 'Cat', 'slug' => 'cat']);
+        $cat = Category::factory()->create(['name' => 'Cat', 'slug' => 'cat']);
         $visual = $this->makeVisual([
             'title' => 'Doc', 'slug' => 'doc', 'category_id' => $cat->id, 'description' => 'desc',
         ]);

@@ -26,7 +26,7 @@ class VisualCrudTest extends TestCase
 
     public function test_admin_can_create_visual_and_slug_is_auto_generated(): void
     {
-        $category = Category::create(['name' => '대시보드', 'slug' => 'dashboard']);
+        $category = Category::factory()->create(['name' => '대시보드', 'slug' => 'dashboard']);
         $prefix = config('app.env') === 'production' ? 'production' : 'local';
 
         $this->actingAsAdmin()->post(route('admin.visuals.store'), [
@@ -55,7 +55,7 @@ class VisualCrudTest extends TestCase
 
     public function test_duplicate_title_gets_suffixed_slug(): void
     {
-        $category = Category::create(['name' => '실험', 'slug' => 'experiment']);
+        $category = Category::factory()->create(['name' => '실험', 'slug' => 'experiment']);
         $this->makeVisual(['title' => 'Test', 'slug' => 'test', 'category_id' => $category->id]);
 
         $this->actingAsAdmin()->post(route('admin.visuals.store'), [
@@ -69,7 +69,7 @@ class VisualCrudTest extends TestCase
 
     public function test_uploaded_html_file_content_is_stored(): void
     {
-        $category = Category::create(['name' => '인터랙티브', 'slug' => 'interactive']);
+        $category = Category::factory()->create(['name' => '인터랙티브', 'slug' => 'interactive']);
         $content = '<!DOCTYPE html><html><head><title>up</title></head><body>uploaded</body></html>';
 
         $this->actingAsAdmin()->post(route('admin.visuals.store'), [
@@ -90,7 +90,7 @@ class VisualCrudTest extends TestCase
 
     public function test_admin_can_update_and_delete_visual(): void
     {
-        $category = Category::create(['name' => '다이어그램', 'slug' => 'diagram']);
+        $category = Category::factory()->create(['name' => '다이어그램', 'slug' => 'diagram']);
         $visual = $this->makeVisual(['title' => 'Old', 'slug' => 'old', 'category_id' => $category->id]);
         $oldPath = $visual->file->getRawOriginal('url');
 
@@ -126,5 +126,31 @@ class VisualCrudTest extends TestCase
         $this->assertDatabaseMissing('files', ['fileable_id' => $visual->id, 'fileable_type' => Visual::class]);
         $this->assertFalse(Cache::has("visual:content:{$visual->id}"));
         Storage::assertMissing($newPath);
+    }
+
+    public function test_admin_visuals_search_by_keyword(): void
+    {
+        $this->makeVisual(['title' => 'Alpha Report', 'slug' => 'alpha-report']);
+        $this->makeVisual(['title' => 'Beta Guide', 'slug' => 'beta-guide']);
+
+        $response = $this->actingAsAdmin()->get(route('admin.visuals.index', ['q' => 'Alpha']));
+
+        $response->assertOk();
+        $response->assertSee('Alpha Report');
+        $response->assertDontSee('Beta Guide');
+        $response->assertSee('value="Alpha"', false);
+    }
+
+    public function test_admin_visuals_pagination_preserves_query_string(): void
+    {
+        for ($i = 1; $i <= 25; $i++) {
+            $this->makeVisual(['title' => "Report {$i}", 'slug' => "report-{$i}"]);
+        }
+
+        $response = $this->actingAsAdmin()->get(route('admin.visuals.index', ['q' => 'Report']));
+
+        $response->assertOk();
+        $response->assertSee('class="pagination"', false);
+        $response->assertSee('q=Report', false);
     }
 }

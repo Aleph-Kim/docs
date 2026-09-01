@@ -11,8 +11,20 @@
     <div id="visual-alert" class="flash" style="display:none; margin-bottom:16px;"></div>
     <div id="visual-error" class="errors" style="display:none; margin-bottom:16px;"></div>
 
+    <form method="GET" action="{{ route('admin.visuals.index') }}" class="search">
+        <input type="text" name="q" value="{{ $keyword }}" placeholder="제목·설명 검색">
+        <button type="submit" class="btn">검색</button>
+        @if ($keyword !== '')
+            <a href="{{ route('admin.visuals.index') }}" class="btn">초기화</a>
+        @endif
+    </form>
+
     @if ($visuals->isEmpty())
-        <div class="empty">등록된 문서가 없습니다.</div>
+        @if ($keyword !== '')
+            <div class="empty">검색 결과가 없습니다.</div>
+        @else
+            <div class="empty">등록된 문서가 없습니다.</div>
+        @endif
     @else
         <div class="table-wrap">
             <table class="list">

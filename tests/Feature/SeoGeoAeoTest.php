@@ -12,7 +12,7 @@ class SeoGeoAeoTest extends TestCase
 
     public function test_sitemap_returns_valid_xml_with_all_urls(): void
     {
-        $cat = Category::create(['name' => 'Architecture', 'slug' => 'architecture']);
+        $cat = Category::factory()->create(['name' => 'Architecture', 'slug' => 'architecture']);
         $visual = $this->makeVisual([
             'title' => 'System Design',
             'slug' => 'system-design',
@@ -38,7 +38,7 @@ class SeoGeoAeoTest extends TestCase
 
     public function test_rss_feed_returns_valid_xml_with_items(): void
     {
-        $cat = Category::create(['name' => 'Backend', 'slug' => 'backend']);
+        $cat = Category::factory()->create(['name' => 'Backend', 'slug' => 'backend']);
         $visual = $this->makeVisual([
             'title' => 'Laravel Pipeline Pattern',
             'slug' => 'laravel-pipeline-pattern',
@@ -66,7 +66,7 @@ class SeoGeoAeoTest extends TestCase
 
     public function test_llms_txt_and_llms_full_txt_endpoints_return_markdown(): void
     {
-        $cat = Category::create(['name' => 'DevOps', 'slug' => 'devops']);
+        $cat = Category::factory()->create(['name' => 'DevOps', 'slug' => 'devops']);
         $visual = $this->makeVisual([
             'title' => 'Kubernetes Guide',
             'slug' => 'kubernetes-guide',
@@ -92,7 +92,7 @@ class SeoGeoAeoTest extends TestCase
 
     public function test_index_page_contains_seo_geo_meta_and_json_ld(): void
     {
-        $cat = Category::create(['name' => 'Backend', 'slug' => 'backend']);
+        $cat = Category::factory()->create(['name' => 'Backend', 'slug' => 'backend']);
         $visual = $this->makeVisual([
             'title' => 'API Design Pattern',
             'slug' => 'api-design-pattern',
@@ -135,7 +135,7 @@ class SeoGeoAeoTest extends TestCase
 
     public function test_show_page_contains_article_metadata_breadcrumbs_and_schema(): void
     {
-        $cat = Category::create(['name' => 'AI', 'slug' => 'ai']);
+        $cat = Category::factory()->create(['name' => 'AI', 'slug' => 'ai']);
         $visual = $this->makeVisual([
             'title' => 'Transformer Attention Mechanism',
             'slug' => 'transformer-attention',

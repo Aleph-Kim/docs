@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
@@ -16,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
 ])]
 class Visual extends Model
 {
+    use HasFactory;
 
     public function category(): BelongsTo
     {
@@ -32,22 +34,22 @@ class Visual extends Model
 
     /**
      * 제목·설명을 키워드로 필터. LIKE 와일드카드(%, _)와 이스케이프 문자는
-     * 리터럴로 취급되도록 백슬래시 이스케이프한다.
+     * 리터럴로 취급되도록 느낌표(!)로 이스케이프한다.
      */
     public function scopeSearch(Builder $query, ?string $term): Builder
     {
-        $term = trim((string)$term);
+        $term = trim((string) $term);
 
         if ($term === '') {
             return $query;
         }
 
-        $escaped = '%' . addcslashes($term, '%_\\') . '%';
+        $escaped = '%' . str_replace(['!', '%', '_'], ['!!', '!%', '!_'], $term) . '%';
 
-        // ESCAPE 절을 명시해야 SQLite·MariaDB 모두에서 백슬래시가 이스케이프 문자로 동작한다
+        // ANSI SQL 표준 ESCAPE '!'를 사용하여 SQLite·MariaDB 모두에서 안전하게 동작
         return $query->where(function (Builder $q) use ($escaped) {
-            $q->whereRaw("title LIKE ? ESCAPE '\\'", [$escaped])
-                ->orWhereRaw("description LIKE ? ESCAPE '\\'", [$escaped]);
+            $q->whereRaw("title LIKE ? ESCAPE '!'", [$escaped])
+                ->orWhereRaw("description LIKE ? ESCAPE '!'", [$escaped]);
         });
     }
 

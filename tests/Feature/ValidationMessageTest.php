@@ -74,7 +74,7 @@ class ValidationMessageTest extends TestCase
 
     public function test_category_duplicate_slug_validation_in_korean(): void
     {
-        Category::create(['name' => '카테고리1', 'slug' => 'cat-1']);
+        Category::factory()->create(['name' => '카테고리1', 'slug' => 'cat-1']);
 
         $response = $this->withHeader('Authorization', 'Bearer test-api-key')
             ->postJson(route('admin.categories.store'), [

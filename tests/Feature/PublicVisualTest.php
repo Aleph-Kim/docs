@@ -34,19 +34,34 @@ class PublicVisualTest extends TestCase
     public function test_wildcard_characters_in_search_are_escaped(): void
     {
         $this->makeVisual(['title' => '100% Coverage']);
+        $this->makeVisual(['title' => 'user_profile_view']);
+        $this->makeVisual(['title' => 'Important! Notice']);
+        $this->makeVisual(['title' => 'user-profile-view']);
         $this->makeVisual(['title' => 'Plain Title']);
 
-        // '%' 등 LIKE 와일드카드의 리터럴 검색 매칭
+        // '%' 리터럴 검색 매칭
         $this->get(route('visuals.index', ['q' => '100%']))
             ->assertOk()
             ->assertSee('100% Coverage')
+            ->assertDontSee('Plain Title');
+
+        // '_' 리터럴 검색 매칭 ('user_profile_view'만 일치하고 'user-profile-view'는 제외)
+        $this->get(route('visuals.index', ['q' => 'user_profile']))
+            ->assertOk()
+            ->assertSee('user_profile_view')
+            ->assertDontSee('user-profile-view');
+
+        // '!' 리터럴 검색 매칭
+        $this->get(route('visuals.index', ['q' => 'Important!']))
+            ->assertOk()
+            ->assertSee('Important! Notice')
             ->assertDontSee('Plain Title');
     }
 
     public function test_category_filter(): void
     {
-        $a = Category::create(['name' => 'Cat A', 'slug' => 'cat-a']);
-        $b = Category::create(['name' => 'Cat B', 'slug' => 'cat-b']);
+        $a = Category::factory()->create(['name' => 'Cat A', 'slug' => 'cat-a']);
+        $b = Category::factory()->create(['name' => 'Cat B', 'slug' => 'cat-b']);
         $this->makeVisual(['title' => 'In A', 'slug' => 'in-a', 'category_id' => $a->id]);
         $this->makeVisual(['title' => 'In B', 'slug' => 'in-b', 'category_id' => $b->id]);
 
@@ -96,5 +111,20 @@ class PublicVisualTest extends TestCase
 
         $this->assertTrue(\Illuminate\Support\Facades\Cache::has($cacheKey));
         $this->assertStringContainsString('Cached Doc', \Illuminate\Support\Facades\Cache::get($cacheKey));
+    }
+
+    public function test_pagination_renders_custom_design(): void
+    {
+        for ($i = 1; $i <= 15; $i++) {
+            $this->makeVisual(['title' => "Doc {$i}", 'slug' => "doc-{$i}"]);
+        }
+
+        $response = $this->get(route('visuals.index'));
+
+        $response->assertOk();
+        $response->assertSee('class="pagination"', false);
+        $response->assertSee('is-active', false);
+        $response->assertSee('aria-label="이전 페이지"', false);
+        $response->assertSee('aria-label="다음 페이지"', false);
     }
 }
