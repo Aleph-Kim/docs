@@ -78,7 +78,8 @@
 @endsection
 
 @section('content')
-    <nav class="breadcrumbs" aria-label="Breadcrumb">
+    <div style="{{ $visual->category?->color ? "--accent: {$visual->category->color};" : '' }}">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
         <a href="{{ route('visuals.index') }}">홈</a>
         <span class="sep">/</span>
         <a href="{{ route('visuals.index', ['category' => $visual->category->id]) }}">{{ $visual->category->name }}</a>
@@ -198,4 +199,5 @@
             <p class="muted small">저장된 HTML 문서가 없습니다.</p>
         @endif
     </article>
+    </div>
 @endsection

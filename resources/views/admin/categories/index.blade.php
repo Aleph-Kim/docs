@@ -10,10 +10,17 @@
     <div id="category-alert" class="flash" style="display:none; margin-bottom:16px;"></div>
     <div id="category-error" class="errors" style="display:none; margin-bottom:16px;"></div>
 
-    <form id="create-category-form" method="POST" action="{{ route('admin.categories.store') }}" class="search">
+    <form id="create-category-form" method="POST" action="{{ route('admin.categories.store') }}" class="search" style="align-items: center;">
         @csrf
         <input type="text" name="name" id="new-cat-name" placeholder="카테고리 이름" required>
         <input type="text" name="slug" id="new-cat-slug" placeholder="슬러그 (선택)">
+        <div class="color-input-wrap">
+            <label class="color-swatch-btn" title="색상 선택">
+                <input type="color" class="color-picker-hidden" value="#0f766e">
+                <span class="color-swatch-dot" style="background-color: #0f766e;"></span>
+            </label>
+            <input type="text" name="color" id="new-cat-color" class="color-text-input" placeholder="#0f766e" maxlength="7">
+        </div>
         <button type="submit" class="btn btn-accent" id="create-cat-btn">추가</button>
     </form>
 
@@ -41,6 +48,13 @@
                                         @method('PUT')
                                         <input type="text" name="name" value="{{ $category->name }}" style="width:180px" required>
                                         <input type="text" name="slug" value="{{ $category->slug }}" style="width:160px">
+                                        <div class="color-input-wrap">
+                                            <label class="color-swatch-btn" title="색상 선택">
+                                                <input type="color" class="color-picker-hidden" value="{{ $category->color ?: '#0f766e' }}">
+                                                <span class="color-swatch-dot" style="background-color: {{ $category->color ?: '#0f766e' }};"></span>
+                                            </label>
+                                            <input type="text" name="color" class="color-text-input" value="{{ $category->color }}" placeholder="#0f766e" maxlength="7">
+                                        </div>
                                         <button type="submit" class="btn">저장</button>
                                     </form>
                                 </td>
@@ -81,6 +95,31 @@ document.addEventListener('DOMContentLoaded', function () {
         errorEl.style.display = 'block';
     }
 
+    // 컬러 피커 및 Hex 텍스트 인풋 양방향 동기화
+    document.addEventListener('input', function (e) {
+        if (e.target.classList.contains('color-picker-hidden')) {
+            const wrap = e.target.closest('.color-input-wrap');
+            if (!wrap) return;
+            const textInput = wrap.querySelector('.color-text-input');
+            const dot = wrap.querySelector('.color-swatch-dot');
+            if (textInput) textInput.value = e.target.value;
+            if (dot) dot.style.backgroundColor = e.target.value;
+        } else if (e.target.classList.contains('color-text-input')) {
+            const wrap = e.target.closest('.color-input-wrap');
+            if (!wrap) return;
+            const picker = wrap.querySelector('.color-picker-hidden');
+            const dot = wrap.querySelector('.color-swatch-dot');
+            const val = e.target.value.trim();
+            if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+                if (picker) picker.value = val;
+                if (dot) dot.style.backgroundColor = val;
+            } else if (val === '') {
+                if (picker) picker.value = '#0f766e';
+                if (dot) dot.style.backgroundColor = '#0f766e';
+            }
+        }
+    });
+
     // 카테고리 추가 비동기 전송
     createForm.addEventListener('submit', async function (e) {
         e.preventDefault();
@@ -102,6 +141,10 @@ document.addEventListener('DOMContentLoaded', function () {
             if (res.ok) {
                 showAlert(json.message || '카테고리를 추가했습니다.');
                 createForm.reset();
+                const dot = createForm.querySelector('.color-swatch-dot');
+                const picker = createForm.querySelector('.color-picker-hidden');
+                if (dot) dot.style.backgroundColor = '#0f766e';
+                if (picker) picker.value = '#0f766e';
                 window.location.reload();
             } else {
                 const msg = (json.errors && Object.values(json.errors).flat().join('\n')) || json.message || '오류가 발생했습니다.';

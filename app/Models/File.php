@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -9,14 +10,19 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
 
+#[Fillable([
+    'name',
+    'origin_name',
+    'url',
+    'file_size',
+    'mime_type',
+    'fileable_type',
+    'fileable_id',
+    'field_name',
+])]
 class File extends Model
 {
     use HasFactory, SoftDeletes;
-
-    protected $fillable = [
-        'name', 'origin_name', 'url', 'file_size', 'mime_type',
-        'fileable_type', 'fileable_id', 'field_name',
-    ];
 
     protected static function booted(): void
     {
@@ -42,6 +48,6 @@ class File extends Model
 
     protected function url(): Attribute
     {
-        return Attribute::get(fn ($value) => $value ? Storage::url($value) : null);
+        return Attribute::get(fn($value) => $value ? Storage::url($value) : null);
     }
 }

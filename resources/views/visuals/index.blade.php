@@ -75,6 +75,7 @@
            class="chip {{ $activeCategory ? '' : 'is-active' }}">전체</a>
         @foreach ($categories as $category)
             <a href="{{ route('visuals.index', array_filter(['category' => $category->id, 'q' => $keyword])) }}"
+               style="{{ $category->color ? "--accent: {$category->color};" : '' }}"
                class="chip {{ (int) $activeCategory === $category->id ? 'is-active' : '' }}">{{ $category->name }}</a>
         @endforeach
     </div>
@@ -96,7 +97,7 @@
     @else
         <div class="grid">
             @foreach ($visuals as $visual)
-                <a href="{{ route('visuals.show', $visual->slug) }}" class="card">
+                <a href="{{ route('visuals.show', $visual->slug) }}" class="card" style="{{ $visual->category?->color ? "--accent: {$visual->category->color};" : '' }}">
                     <span class="card-cat">{{ $visual->category->name }}</span>
                     <h3>{{ $visual->title }}</h3>
                     @if ($visual->description)
