@@ -51,12 +51,14 @@ class VisualController extends Controller
             return $visual;
         });
 
+        $message = "'{$visual->title}' 문서를 등록했습니다.";
+
         if ($request->expectsJson()) {
             $visual->load('category', 'file');
-            return $this->created(new VisualResource($visual), '문서를 등록했습니다.');
+            return $this->created(new VisualResource($visual), $message);
         }
 
-        return redirect()->route('admin.visuals.index')->with('status', '문서를 등록했습니다.');
+        return redirect()->route('admin.visuals.index')->with('status', $message);
     }
 
     public function edit(Visual $visual): View
@@ -78,27 +80,33 @@ class VisualController extends Controller
             Cache::forget("visual:content:{$visual->id}");
         });
 
+        $message = "'{$visual->title}' 문서를 수정했습니다.";
+
         if ($request->expectsJson()) {
             $visual->load('category', 'file');
-            return $this->success(new VisualResource($visual), '문서를 수정했습니다.');
+            return $this->success(new VisualResource($visual), $message);
         }
 
-        return redirect()->route('admin.visuals.index')->with('status', '문서를 수정했습니다.');
+        return redirect()->route('admin.visuals.index')->with('status', $message);
     }
 
     public function destroy(Request $request, Visual $visual): RedirectResponse|JsonResponse
     {
+        $title = $visual->title;
+
         DB::transaction(function () use ($visual) {
             FileService::deleteByModel($visual);
             $visual->delete();
             Cache::forget("visual:content:{$visual->id}");
         });
 
+        $message = "'{$title}' 문서를 삭제했습니다.";
+
         if ($request->expectsJson()) {
-            return $this->success(null, '문서를 삭제했습니다.');
+            return $this->success(null, $message);
         }
 
-        return redirect()->route('admin.visuals.index')->with('status', '문서를 삭제했습니다.');
+        return redirect()->route('admin.visuals.index')->with('status', $message);
     }
 
     /**

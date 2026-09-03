@@ -66,20 +66,20 @@
     </header>
 
     <main class="wrap">
-        @if (session('status'))
-        <div class="flash">{{ session('status') }}</div>
-        @endif
-
-        @if ($errors->any())
-        <div class="errors">
-            @foreach ($errors->all() as $error)
-            <div>{{ $error }}</div>
-            @endforeach
-        </div>
-        @endif
-
         @yield('content')
     </main>
+
+    <dialog id="app-dialog" class="app-dialog" aria-labelledby="app-dialog-title" aria-describedby="app-dialog-message">
+        <div class="app-dialog-box">
+            <h3 id="app-dialog-title" class="app-dialog-title">알림</h3>
+            <p id="app-dialog-message" class="app-dialog-message"></p>
+            <div class="app-dialog-actions">
+                <button type="button" id="app-dialog-cancel" class="btn">취소</button>
+                <button type="button" id="app-dialog-confirm" class="btn btn-accent">확인</button>
+            </div>
+        </div>
+    </dialog>
+
 
     <div class="responsive-modal-backdrop" id="responsive-modal">
         <div class="responsive-modal" role="dialog" aria-modal="true" aria-labelledby="responsive-modal-title">
@@ -128,6 +128,91 @@
                 if (e.key === 'Escape') closeModal();
             });
         })();
+
+        window.AppDialog = (function() {
+            var dialog = document.getElementById('app-dialog');
+            var titleEl = document.getElementById('app-dialog-title');
+            var msgEl = document.getElementById('app-dialog-message');
+            var cancelBtn = document.getElementById('app-dialog-cancel');
+            var confirmBtn = document.getElementById('app-dialog-confirm');
+
+            var currentResolver = null;
+
+            function cleanup(result) {
+                if (currentResolver) {
+                    var resolve = currentResolver;
+                    currentResolver = null;
+                    resolve(result);
+                }
+            }
+
+            if (dialog) {
+                dialog.addEventListener('click', function(e) {
+                    if (e.target === dialog) {
+                        dialog.close();
+                    }
+                });
+
+                dialog.addEventListener('close', function() {
+                    cleanup(false);
+                });
+
+                confirmBtn.addEventListener('click', function() {
+                    var resolve = currentResolver;
+                    currentResolver = null;
+                    dialog.close();
+                    if (resolve) resolve(true);
+                });
+
+                cancelBtn.addEventListener('click', function() {
+                    dialog.close();
+                });
+            }
+
+            return {
+                alert: function(message, title) {
+                    return new Promise(function(resolve) {
+                        if (!dialog || typeof dialog.showModal !== 'function') {
+                            window.alert(message);
+                            return resolve(true);
+                        }
+                        titleEl.textContent = title || '알림';
+                        msgEl.textContent = message || '';
+                        cancelBtn.style.display = 'none';
+                        confirmBtn.textContent = '확인';
+                        currentResolver = resolve;
+                        dialog.showModal();
+                        confirmBtn.focus();
+                    });
+                },
+                confirm: function(message, title) {
+                    return new Promise(function(resolve) {
+                        if (!dialog || typeof dialog.showModal !== 'function') {
+                            return resolve(window.confirm(message));
+                        }
+                        titleEl.textContent = title || '확인';
+                        msgEl.textContent = message || '';
+                        cancelBtn.style.display = 'inline-block';
+                        confirmBtn.textContent = '확인';
+                        currentResolver = resolve;
+                        dialog.showModal();
+                        confirmBtn.focus();
+                    });
+                }
+            };
+        })();
+
+        @if (session('status'))
+        document.addEventListener('DOMContentLoaded', function() {
+            window.AppDialog && window.AppDialog.alert(@json(session('status')));
+        });
+        @endif
+
+        @if ($errors->any())
+        document.addEventListener('DOMContentLoaded', function() {
+            window.AppDialog && window.AppDialog.alert(@json(implode("\n", $errors->all())), '오류');
+        });
+        @endif
     </script>
 </body>
 

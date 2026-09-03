@@ -268,6 +268,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const data = await response.json();
 
             if (response.ok) {
+                await window.AppDialog.alert(data.message || '문서를 저장했습니다.');
                 window.location.href = "{{ route('admin.visuals.index') }}";
                 return;
             }
@@ -281,13 +282,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 generalErr.innerHTML = '입력 항목을 확인해주세요.';
                 generalErr.style.display = 'block';
+                await window.AppDialog.alert('입력 항목을 확인해주세요.', '오류');
             } else {
-                generalErr.innerHTML = data.message || '오류가 발생했습니다.';
+                const errorMsg = data.message || '오류가 발생했습니다.';
+                generalErr.innerHTML = errorMsg;
                 generalErr.style.display = 'block';
+                await window.AppDialog.alert(errorMsg, '오류');
             }
         } catch (err) {
             generalErr.innerHTML = '네트워크 통신 중 오류가 발생했습니다.';
             generalErr.style.display = 'block';
+            await window.AppDialog.alert('네트워크 통신 중 오류가 발생했습니다.', '오류');
         } finally {
             submitBtn.disabled = false;
             submitBtn.innerText = originalText;

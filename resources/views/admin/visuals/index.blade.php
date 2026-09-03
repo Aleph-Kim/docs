@@ -8,9 +8,6 @@
         <a href="{{ route('admin.visuals.create') }}" class="btn btn-accent">새 문서</a>
     </div>
 
-    <div id="visual-alert" class="flash" style="display:none; margin-bottom:16px;"></div>
-    <div id="visual-error" class="errors" style="display:none; margin-bottom:16px;"></div>
-
     <form method="GET" action="{{ route('admin.visuals.index') }}" class="search">
         <input type="text" name="q" value="{{ $keyword }}" placeholder="제목·설명 검색">
         <button type="submit" class="btn">검색</button>
@@ -69,34 +66,25 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const alertEl = document.getElementById('visual-alert');
-    const errorEl = document.getElementById('visual-error');
-
     function showAlert(msg) {
-        if (errorEl) errorEl.style.display = 'none';
-        if (alertEl) {
-            alertEl.innerText = msg;
-            alertEl.style.display = 'block';
-            setTimeout(() => { alertEl.style.display = 'none'; }, 3000);
-        }
+        return window.AppDialog.alert(msg);
     }
 
     function showError(msg) {
-        if (alertEl) alertEl.style.display = 'none';
-        if (errorEl) {
-            errorEl.innerText = msg;
-            errorEl.style.display = 'block';
-        }
+        return window.AppDialog.alert(msg, '오류');
     }
 
     document.addEventListener('submit', async function (e) {
         if (!e.target.classList.contains('visual-delete-form')) return;
         e.preventDefault();
 
-        if (!confirm('삭제하시겠습니까?')) return;
-
         const form = e.target;
         const row = form.closest('tr');
+        const title = row?.querySelector('.title')?.textContent.trim() || '문서';
+
+        const confirmed = await window.AppDialog.confirm(`'${title}' 문서를 삭제하시겠습니까?`, '문서 삭제');
+        if (!confirmed) return;
+
         const btn = form.querySelector('button[type="submit"]');
         btn.disabled = true;
 
@@ -113,14 +101,14 @@ document.addEventListener('DOMContentLoaded', function () {
             const json = await res.json();
 
             if (res.ok) {
-                showAlert(json.message || '문서를 삭제했습니다.');
+                await showAlert(json.message || '문서를 삭제했습니다.');
                 row.remove();
             } else {
-                showError(json.message || '삭제에 실패했습니다.');
+                await showError(json.message || '삭제에 실패했습니다.');
                 btn.disabled = false;
             }
         } catch (err) {
-            showError('통신 중 오류가 발생했습니다.');
+            await showError('통신 중 오류가 발생했습니다.');
             btn.disabled = false;
         }
     });

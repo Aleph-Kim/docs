@@ -32,12 +32,13 @@ class CategoryController extends Controller
         $data['slug'] = $this->uniqueSlug($data['slug'] ?? null, $data['name']);
 
         $category = Category::create($data);
+        $message = "'{$category->name}' 카테고리를 추가했습니다.";
 
         if ($request->expectsJson()) {
-            return $this->created(new CategoryResource($category), '카테고리를 추가했습니다.');
+            return $this->created(new CategoryResource($category), $message);
         }
 
-        return redirect()->route('admin.categories.index')->with('status', '카테고리를 추가했습니다.');
+        return redirect()->route('admin.categories.index')->with('status', $message);
     }
 
     public function update(UpdateCategoryRequest $request, Category $category): RedirectResponse|JsonResponse
@@ -46,12 +47,13 @@ class CategoryController extends Controller
         $data['slug'] = $this->uniqueSlug($data['slug'] ?? null, $data['name'], $category->id);
 
         $category->update($data);
+        $message = "'{$category->name}' 카테고리를 수정했습니다.";
 
         if ($request->expectsJson()) {
-            return $this->success(new CategoryResource($category), '카테고리를 수정했습니다.');
+            return $this->success(new CategoryResource($category), $message);
         }
 
-        return redirect()->route('admin.categories.index')->with('status', '카테고리를 수정했습니다.');
+        return redirect()->route('admin.categories.index')->with('status', $message);
     }
 
     public function destroy(Request $request, Category $category): RedirectResponse|JsonResponse
@@ -65,13 +67,15 @@ class CategoryController extends Controller
                 ->withErrors(['category' => '이 카테고리에 연결된 문서가 있어 삭제할 수 없습니다.']);
         }
 
+        $name = $category->name;
         $category->delete();
+        $message = "'{$name}' 카테고리를 삭제했습니다.";
 
         if ($request->expectsJson()) {
-            return $this->success(null, '카테고리를 삭제했습니다.');
+            return $this->success(null, $message);
         }
 
-        return redirect()->route('admin.categories.index')->with('status', '카테고리를 삭제했습니다.');
+        return redirect()->route('admin.categories.index')->with('status', $message);
     }
 
     private function uniqueSlug(?string $slug, string $name, ?int $ignoreId = null): string

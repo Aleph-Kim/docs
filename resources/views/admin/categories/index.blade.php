@@ -7,9 +7,6 @@
         <h1>카테고리 관리</h1>
     </div>
 
-    <div id="category-alert" class="flash" style="display:none; margin-bottom:16px;"></div>
-    <div id="category-error" class="errors" style="display:none; margin-bottom:16px;"></div>
-
     <form id="create-category-form" method="POST" action="{{ route('admin.categories.store') }}" class="search" style="align-items: center;">
         @csrf
         <input type="text" name="name" id="new-cat-name" placeholder="카테고리 이름" required>
@@ -79,21 +76,14 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const alertEl = document.getElementById('category-alert');
-    const errorEl = document.getElementById('category-error');
     const createForm = document.getElementById('create-category-form');
 
     function showAlert(msg) {
-        errorEl.style.display = 'none';
-        alertEl.innerText = msg;
-        alertEl.style.display = 'block';
-        setTimeout(() => { alertEl.style.display = 'none'; }, 3000);
+        return window.AppDialog.alert(msg);
     }
 
     function showError(msg) {
-        alertEl.style.display = 'none';
-        errorEl.innerText = msg;
-        errorEl.style.display = 'block';
+        return window.AppDialog.alert(msg, '오류');
     }
 
     // 컬러 피커 및 Hex 텍스트 인풋 양방향 동기화
@@ -140,7 +130,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const json = await res.json();
 
             if (res.ok) {
-                showAlert(json.message || '카테고리를 추가했습니다.');
+                await showAlert(json.message || '카테고리를 추가했습니다.');
                 createForm.reset();
                 const dot = createForm.querySelector('.color-swatch-dot');
                 const picker = createForm.querySelector('.color-picker-hidden');
@@ -149,10 +139,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 window.location.reload();
             } else {
                 const msg = (json.errors && Object.values(json.errors).flat().join('\n')) || json.message || '오류가 발생했습니다.';
-                showError(msg);
+                await showError(msg);
             }
         } catch (err) {
-            showError('통신 중 오류가 발생했습니다.');
+            await showError('통신 중 오류가 발생했습니다.');
         } finally {
             submitBtn.disabled = false;
         }
@@ -182,13 +172,13 @@ document.addEventListener('DOMContentLoaded', function () {
             const json = await res.json();
 
             if (res.ok) {
-                showAlert(json.message || '카테고리를 수정했습니다.');
+                await showAlert(json.message || '카테고리를 수정했습니다.');
             } else {
                 const msg = (json.errors && Object.values(json.errors).flat().join('\n')) || json.message || '오류가 발생했습니다.';
-                showError(msg);
+                await showError(msg);
             }
         } catch (err) {
-            showError('통신 중 오류가 발생했습니다.');
+            await showError('통신 중 오류가 발생했습니다.');
         } finally {
             btn.disabled = false;
             btn.innerText = origText;
@@ -200,10 +190,13 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!e.target.classList.contains('category-delete-form')) return;
         e.preventDefault();
 
-        if (!confirm('삭제하시겠습니까?')) return;
-
         const form = e.target;
         const row = form.closest('tr');
+        const catName = row?.querySelector('input[name="name"]')?.value || '카테고리';
+
+        const confirmed = await window.AppDialog.confirm(`'${catName}' 카테고리를 삭제하시겠습니까?`, '카테고리 삭제');
+        if (!confirmed) return;
+
         const btn = form.querySelector('button[type="submit"]');
         btn.disabled = true;
 
@@ -220,14 +213,14 @@ document.addEventListener('DOMContentLoaded', function () {
             const json = await res.json();
 
             if (res.ok) {
-                showAlert(json.message || '카테고리를 삭제했습니다.');
+                await showAlert(json.message || '카테고리를 삭제했습니다.');
                 row.remove();
             } else {
-                showError(json.message || '삭제에 실패했습니다.');
+                await showError(json.message || '삭제에 실패했습니다.');
                 btn.disabled = false;
             }
         } catch (err) {
-            showError('통신 중 오류가 발생했습니다.');
+            await showError('통신 중 오류가 발생했습니다.');
             btn.disabled = false;
         }
     });
