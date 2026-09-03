@@ -60,13 +60,14 @@
                                 </td>
                                 <td class="nowrap">{{ $category->visuals_count }}</td>
                                 <td class="actions">
-                                    <form method="POST" action="{{ route('admin.categories.destroy', $category) }}"
-                                          class="category-delete-form">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger"
-                                                @disabled($category->visuals_count > 0)>삭제</button>
-                                    </form>
+                                    @if ($category->visuals_count === 0)
+                                        <form method="POST" action="{{ route('admin.categories.destroy', $category) }}"
+                                              class="category-delete-form">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger">삭제</button>
+                                        </form>
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach
