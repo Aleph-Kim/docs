@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @php
-    $currentCategory = $categories->firstWhere('id', (int) $activeCategory);
+    $currentCategory = $categories->firstWhere('slug', $activeCategory) ?: $categories->firstWhere('id', (int) $activeCategory);
     $pageTitle = $currentCategory ? "{$currentCategory->name} 문서 목록" : '문서 목록';
     $pageDesc = $currentCategory
         ? "{$currentCategory->name} 카테고리의 인터랙티브 시각화 및 기술 문서 목록입니다."
@@ -74,9 +74,9 @@
         <a href="{{ route('visuals.index', array_filter(['q' => $keyword])) }}"
            class="chip {{ $activeCategory ? '' : 'is-active' }}">전체</a>
         @foreach ($categories as $category)
-            <a href="{{ route('visuals.index', array_filter(['category' => $category->id, 'q' => $keyword])) }}"
+            <a href="{{ route('visuals.index', array_filter(['category' => $category->slug, 'q' => $keyword])) }}"
                style="{{ $category->color ? "--accent: {$category->color};" : '' }}"
-               class="chip {{ (int) $activeCategory === $category->id ? 'is-active' : '' }}">{{ $category->name }}</a>
+               class="chip {{ $activeCategory === $category->slug || (int) $activeCategory === $category->id ? 'is-active' : '' }}">{{ $category->name }}</a>
         @endforeach
     </div>
 

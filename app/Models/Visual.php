@@ -53,12 +53,15 @@ class Visual extends Model
         });
     }
 
-    public function scopeInCategory(Builder $query, mixed $categoryId): Builder
+    public function scopeInCategory(Builder $query, mixed $category): Builder
     {
-        if (blank($categoryId)) {
+        if (blank($category)) {
             return $query;
         }
 
-        return $query->where('category_id', $categoryId);
+        return $query->whereHas('category', function (Builder $q) use ($category) {
+            $q->where('slug', $category)
+                ->when(is_numeric($category), fn($subQuery) => $subQuery->orWhere('id', (int) $category));
+        });
     }
 }

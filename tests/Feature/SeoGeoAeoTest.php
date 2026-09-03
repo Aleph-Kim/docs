@@ -29,7 +29,7 @@ class SeoGeoAeoTest extends TestCase
         $xml = simplexml_load_string($response->getContent());
         $this->assertNotFalse($xml, 'Sitemap response is not valid XML');
         $response->assertSee(route('visuals.index'), false);
-        $response->assertSee(route('visuals.index', ['category' => $cat->id]), false);
+        $response->assertSee(route('visuals.index', ['category' => $cat->slug]), false);
         $response->assertSee(route('visuals.show', $visual->slug), false);
         $response->assertSee('<changefreq>daily</changefreq>', false);
         $response->assertSee('<changefreq>weekly</changefreq>', false);

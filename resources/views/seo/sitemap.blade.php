@@ -13,7 +13,7 @@
     {{-- 카테고리별 목록 페이지 --}}
     @foreach ($categories as $category)
         <url>
-            <loc>{{ route('visuals.index', ['category' => $category->id]) }}</loc>
+            <loc>{{ route('visuals.index', ['category' => $category->slug]) }}</loc>
             <changefreq>weekly</changefreq>
             <priority>0.7</priority>
         </url>

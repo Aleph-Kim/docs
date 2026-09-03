@@ -47,7 +47,7 @@
                         '@type' => 'ListItem',
                         'position' => 2,
                         'name' => $visual->category->name,
-                        'item' => route('visuals.index', ['category' => $visual->category->id]),
+                        'item' => route('visuals.index', ['category' => $visual->category->slug]),
                     ],
                     [
                         '@type' => 'ListItem',
@@ -82,7 +82,7 @@
         <nav class="breadcrumbs" aria-label="Breadcrumb">
         <a href="{{ route('visuals.index') }}">홈</a>
         <span class="sep">/</span>
-        <a href="{{ route('visuals.index', ['category' => $visual->category->id]) }}">{{ $visual->category->name }}</a>
+        <a href="{{ route('visuals.index', ['category' => $visual->category->slug]) }}">{{ $visual->category->name }}</a>
         <span class="sep">/</span>
         <span class="current" aria-current="page">{{ $visual->title }}</span>
     </nav>
@@ -91,7 +91,7 @@
         <header class="visual-meta">
             <h1 itemprop="headline">{{ $visual->title }}</h1>
             <div class="muted small">
-                <a href="{{ route('visuals.index', ['category' => $visual->category->id]) }}" class="cat-link"
+                <a href="{{ route('visuals.index', ['category' => $visual->category->slug]) }}" class="cat-link"
                    itemprop="articleSection">{{ $visual->category->name }}</a>
                 ·
                 <time itemprop="datePublished" datetime="{{ $visual->created_at->toIso8601String() }}">

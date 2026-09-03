@@ -65,6 +65,13 @@ class PublicVisualTest extends TestCase
         $this->makeVisual(['title' => 'In A', 'slug' => 'in-a', 'category_id' => $a->id]);
         $this->makeVisual(['title' => 'In B', 'slug' => 'in-b', 'category_id' => $b->id]);
 
+        // slug 기반 카테고리 필터링 검증
+        $this->get(route('visuals.index', ['category' => $a->slug]))
+            ->assertOk()
+            ->assertSee('In A')
+            ->assertDontSee('In B');
+
+        // id 기반 하위호환 필터링 검증
         $this->get(route('visuals.index', ['category' => $a->id]))
             ->assertOk()
             ->assertSee('In A')

@@ -60,7 +60,7 @@ class SeoController extends Controller
         $lines[] = '';
         $lines[] = '## Categories';
         foreach ($categories as $cat) {
-            $catUrl = route('visuals.index', ['category' => $cat->id]);
+            $catUrl = route('visuals.index', ['category' => $cat->slug]);
             $lines[] = "- [{$cat->name}]({$catUrl}): {$cat->visuals_count}개의 시각화 문서";
         }
         $lines[] = '';
