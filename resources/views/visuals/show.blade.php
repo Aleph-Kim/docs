@@ -112,6 +112,8 @@
         </div>
 
         @if ($visual->file)
+            <div class="full-hint">전체화면으로 보면 더 편해요!</div>
+
             <section class="visual-content" aria-label="문서 뷰어">
                 <div class="frame-wrap" id="frame-wrap">
                     <div class="frame-loader" id="frame-loader">

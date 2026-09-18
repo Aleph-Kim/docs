@@ -54,6 +54,19 @@ class VisualController extends Controller
             return Storage::get($path);
         });
 
+        // macOS 오버레이 스크롤바는 스크롤 전엔 숨겨져 있어 스크롤 가능 여부를 알 수 없으므로 항상 표시
+        $scrollbarStyle = '<style>'
+            .'::-webkit-scrollbar{width:10px;height:10px}'
+            .'::-webkit-scrollbar-track{background:#f4f4f5}'
+            .'::-webkit-scrollbar-thumb{background:#a1a1aa;border-radius:5px}'
+            .'</style>';
+
+        $content = preg_replace('~</head>~i', $scrollbarStyle.'</head>', $content, 1, $count);
+
+        if ($count === 0) {
+            $content .= $scrollbarStyle;
+        }
+
         $etag = '"'.md5($content).'"';
 
         return response($content, 200, [

@@ -697,6 +697,54 @@ table.list td.slug {
     margin-bottom: 12px;
 }
 
+.full-hint {
+    position: relative;
+    width: fit-content;
+    margin-bottom: 12px;
+    padding: 2px 10px;
+    border: 1px solid var(--accent);
+    border-radius: 4px;
+    background: var(--accent-soft);
+    color: var(--ink);
+    font-size: 15px;
+    white-space: nowrap;
+    animation: full-hint-bounce 1.6s ease-in-out infinite;
+}
+
+.full-hint::before {
+    content: "";
+    position: absolute;
+    top: -6px;
+    left: 20px;
+    width: 10px;
+    height: 10px;
+    border-left: 1px solid var(--accent);
+    border-top: 1px solid var(--accent);
+    background: var(--accent-soft);
+    transform: rotate(45deg);
+}
+
+@keyframes full-hint-bounce {
+    0%, 40%, 100% {
+        transform: translateY(0);
+    }
+    10% {
+        transform: translateY(-6px);
+    }
+    20% {
+        transform: translateY(0);
+    }
+    30% {
+        transform: translateY(-3px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .full-hint {
+        animation: none;
+    }
+}
+
 .frame-wrap {
     position: relative;
     overflow: hidden;
