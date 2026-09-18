@@ -61,10 +61,26 @@ class VisualController extends Controller
             .'::-webkit-scrollbar-thumb{background:#a1a1aa;border-radius:5px}'
             .'</style>';
 
-        $content = preg_replace('~</head>~i', $scrollbarStyle.'</head>', $content, 1, $count);
+        // 샌드박스 iframe 에 포커스가 있으면 키 입력이 부모로 전달되지 않으므로 단축키를 부모에 대신 전달
+        $shortcutScript = '<script>'
+            .'document.addEventListener("keydown",function(e){'
+            .'if(parent===window||e.repeat||e.metaKey||e.ctrlKey||e.altKey)return;'
+            .'if(e.target.closest&&e.target.closest("input,textarea,select,[contenteditable]"))return;'
+            .'if(e.key==="Escape"||e.code==="KeyF")parent.postMessage({type:"visual-shortcut",key:e.key,code:e.code},"*");'
+            .'});'
+            // 부모에 포커스가 있을 때 부모가 넘겨준 탐색 키를 문서 자체 키 핸들러(단계 재생 등)에 전달
+            .'window.addEventListener("message",function(e){'
+            .'if(e.source!==parent||parent===window||!e.data||e.data.type!=="visual-key")return;'
+            .'document.dispatchEvent(new KeyboardEvent("keydown",{key:e.data.key,code:e.data.code,bubbles:true,cancelable:true}));'
+            .'});'
+            .'</script>';
+
+        $injected = $scrollbarStyle.$shortcutScript;
+
+        $content = preg_replace('~</head>~i', $injected.'</head>', $content, 1, $count);
 
         if ($count === 0) {
-            $content .= $scrollbarStyle;
+            $content .= $injected;
         }
 
         $etag = '"'.md5($content).'"';

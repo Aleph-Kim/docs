@@ -105,10 +105,10 @@
 
         <div class="visual-toolbar">
             @if ($visual->file)
-                <button type="button" class="btn" id="toggle-full">전체화면</button>
+                <button type="button" class="btn" id="toggle-full" aria-keyshortcuts="F">전체화면 <kbd class="kbd">F</kbd></button>
                 <a href="{{ route('visuals.render', $visual) }}" target="_blank" rel="noopener" class="btn">새 탭에서 열기</a>
             @endif
-            <a href="{{ route('visuals.index') }}" class="btn">목록</a>
+            <a href="{{ route('visuals.index') }}" class="btn" id="back-list" aria-keyshortcuts="Escape">목록 <kbd class="kbd">Esc</kbd></a>
         </div>
 
         @if ($visual->file)
@@ -127,7 +127,7 @@
                             sandbox="allow-scripts allow-popups"
                             title="{{ $visual->title }}"></iframe>
                 </div>
-                <button type="button" class="btn frame-exit" id="exit-full">전체화면 종료</button>
+                <button type="button" class="btn frame-exit" id="exit-full" aria-keyshortcuts="Escape">전체화면 종료 <kbd class="kbd">Esc</kbd></button>
             </section>
 
             <script>
@@ -154,10 +154,6 @@
                             setFull(false);
                         });
                     }
-                    document.addEventListener('keydown', function (e) {
-                        if (e.key === 'Escape') setFull(false);
-                    });
-
                     if (iframe && loader && bar) {
                         var progress = 12;
                         bar.style.width = progress + '%';
@@ -200,6 +196,54 @@
         @else
             <p class="muted small">저장된 HTML 문서가 없습니다.</p>
         @endif
+
+        <script>
+            (function () {
+                function handleShortcut(key, code) {
+                    // 다이얼로그·모달이 열려 있으면 Esc 는 그쪽 닫기에 양보
+                    if (document.querySelector('dialog[open], .is-open')) return false;
+
+                    var wrap = document.getElementById('frame-wrap');
+                    var isFull = wrap && wrap.classList.contains('is-full');
+
+                    // 한글 입력 상태에선 e.key 가 'ㄹ' 이 되므로 물리 키 기준으로 판별
+                    if (code === 'KeyF' && wrap && !isFull) {
+                        document.getElementById('toggle-full').click();
+                        return true;
+                    }
+                    if (key === 'Escape') {
+                        document.getElementById(isFull ? 'exit-full' : 'back-list').click();
+                        return true;
+                    }
+                    return false;
+                }
+
+                document.addEventListener('keydown', function (e) {
+                    if (e.repeat || e.metaKey || e.ctrlKey || e.altKey) return;
+                    if (e.target.closest('input, textarea, select, [contenteditable]')) return;
+                    if (handleShortcut(e.key, e.code)) {
+                        e.preventDefault();
+                        return;
+                    }
+
+                    // 다이어그램 단계 이동(←/→)·재생(Space)은 iframe 안에서만 키를 받으므로 대신 넘겨줌
+                    var iframe = document.getElementById('visual-frame');
+                    if (!iframe || ['ArrowLeft', 'ArrowRight', ' '].indexOf(e.key) === -1) return;
+                    // 포커스된 버튼·링크의 Space 는 브라우저 기본 클릭 동작 유지
+                    if (e.key === ' ' && e.target.closest('button, a')) return;
+                    e.preventDefault();
+                    iframe.contentWindow.postMessage({ type: 'visual-key', key: e.key, code: e.code }, '*');
+                });
+
+                // 다이어그램 iframe 에 포커스가 있을 때 render 응답에 주입된 스크립트가 보낸 단축키
+                window.addEventListener('message', function (e) {
+                    var iframe = document.getElementById('visual-frame');
+                    if (!iframe || e.source !== iframe.contentWindow) return;
+                    if (!e.data || e.data.type !== 'visual-shortcut') return;
+                    handleShortcut(e.data.key, e.data.code);
+                });
+            })();
+        </script>
     </article>
     </div>
 @endsection
